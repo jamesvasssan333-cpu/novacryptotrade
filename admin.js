@@ -32,7 +32,14 @@ async function apiRequest(endpoint, options = {}) {
     ...options
   });
 
-  if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+  if (!response.ok) {
+    let details = '';
+    try {
+      const payload = await response.json();
+      details = payload.error ? `: ${payload.error}` : '';
+    } catch {}
+    throw new Error(`Request failed: ${response.status}${details}`);
+  }
   return response.status === 204 ? null : response.json();
 }
 
@@ -274,7 +281,7 @@ async function sendCustomerMessageEmail() {
     setCustomerMessageStatus(error.message.includes('503')
       ? 'Email service is not configured on the server. Add the Brevo API key and verified sender email.'
       : error.message.includes('502')
-        ? 'Brevo rejected the email. Check the verified sender and API key.'
+        ? error.message.replace('Request failed: 502: ', '')
         : 'Could not send this message.', 'error');
   } finally {
     sendCustomerMessage.disabled = false;

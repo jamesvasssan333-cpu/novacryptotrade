@@ -1,4 +1,5 @@
 const jsonServer = require('json-server');
+const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
 
@@ -30,6 +31,10 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
 const BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || '';
 const BREVO_SENDER_NAME = process.env.BREVO_SENDER_NAME || 'NovaCrypto';
+
+server.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 const marketPrices = {
   BTC: 67420.18,
@@ -820,6 +825,7 @@ server.get('/api/admin/data', async (req, res) => {
   }
 });
 
+server.use(express.static(__dirname, { index: 'index.html' }));
 server.use(router);
 server.listen(port, () => {
   console.log(`JSON Server is running on http://localhost:${port}`);

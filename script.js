@@ -663,18 +663,18 @@ function closeAuth() {
   if (!authModal) return;
 
   const returnFocus = authReturnFocus;
-  authModal.classList.remove('open');
-  authModal.setAttribute('aria-hidden', 'true');
-  authModal.inert = true;
-  document.querySelector('.auth-tabs')?.classList.remove('hidden');
-  authReturnFocus = null;
-
   if (returnFocus instanceof HTMLElement && document.contains(returnFocus)) {
     returnFocus.focus();
   } else {
     document.body.setAttribute('tabindex', '-1');
     document.body.focus({ preventScroll: true });
   }
+
+  authModal.classList.remove('open');
+  authModal.setAttribute('aria-hidden', 'true');
+  authModal.inert = true;
+  document.querySelector('.auth-tabs')?.classList.remove('hidden');
+  authReturnFocus = null;
 }
 
 function redirectToDashboard() {

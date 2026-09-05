@@ -836,7 +836,23 @@ server.get('/api/admin/data', async (req, res) => {
     });
   } catch (error) {
     console.warn(`Supabase admin read failed: ${error.message}`);
-    return sendJson(res, 502, { error: 'Could not load admin data from Supabase.' });
+    const localData = router.db.value();
+    const localUsers = (localData.users || []).map(({ password, password_hash, ...user }) => user);
+    const localHoldings = Object.entries(localData.holdings || {}).flatMap(([userEmail, assets]) =>
+      Object.entries(assets || {}).map(([asset, quantity]) => ({ userEmail, asset, quantity: Number(quantity) }))
+    );
+
+    return sendJson(res, 200, {
+      source: 'local',
+      users: localUsers,
+      balances: localData.balances || {},
+      holdings: localHoldings,
+      orders: localData.orders || [],
+      deposits: localData.deposits || [],
+      withdrawals: localData.withdrawals || [],
+      payments: localData.payments || {},
+      chatMessages: localData.messages || []
+    });
   }
 });
 

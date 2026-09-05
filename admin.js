@@ -276,7 +276,7 @@ async function sendCustomerMessageEmail() {
       body: JSON.stringify({ emails, sendToAll: allCustomersSelected, day: selectedMessageDay, subject, body })
     });
     customerMessages = result.messages;
-    setCustomerMessageStatus(result.message, 'success');
+    setCustomerMessageStatus(`${result.message}${result.recipients?.length ? ` Message IDs: ${result.recipients.map((recipient) => recipient.messageId || 'pending').join(', ')}` : ''}`, 'success');
   } catch (error) {
     setCustomerMessageStatus(error.message.includes('503')
       ? 'Email service is not configured on the server. Add the Brevo API key and verified sender email.'

@@ -208,7 +208,8 @@ async function sendBrevoEmail({ to, name, subject, textContent, htmlContent }) {
       console.warn(`${reason} ${providerMessage}`);
       return { sent: false, reason, providerStatus: response.status };
     }
-    return { sent: true };
+    const providerResult = await response.json().catch(() => ({}));
+    return { sent: true, messageId: providerResult.messageId || null };
   } catch (error) {
     const reason = `Brevo could not be reached: ${error.message}`;
     console.warn(reason);
@@ -512,6 +513,8 @@ server.post('/api/admin/customer-messages/send', async (req, res) => {
     });
   }
 
+  console.log(`Brevo accepted customer message for ${results.length} recipient(s): ${results.map((result) => `${result.email} (${result.messageId || 'no message id'})`).join(', ')}`);
+
   const messages = await getCustomerMessages();
   messages[day].subject = subject;
   messages[day].body = body;
@@ -525,7 +528,11 @@ server.post('/api/admin/customer-messages/send', async (req, res) => {
     body,
     sent_at: sentAt
   })));
-  return sendJson(res, 200, { message: `Message sent to ${emails.length} customer${emails.length === 1 ? '' : 's'}.`, messages });
+  return sendJson(res, 200, {
+    message: `Message accepted for ${emails.length} customer${emails.length === 1 ? '' : 's'}. Check Brevo transaction logs for delivery status.`,
+    recipients: results.map((result) => ({ email: result.email, messageId: result.messageId })),
+    messages
+  });
 });
 
 server.post('/api/funds', (req, res) => {

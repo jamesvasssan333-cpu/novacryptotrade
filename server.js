@@ -177,9 +177,10 @@ async function supabaseRead(table, query = '?select=*') {
 }
 
 async function sendBrevoEmail({ to, name, subject, textContent, htmlContent }) {
-  if (!BREVO_API_KEY || !BREVO_SENDER_EMAIL) {
-    console.warn('Welcome email skipped: set BREVO_API_KEY and BREVO_SENDER_EMAIL.');
-    return false;
+  if (!BREVO_API_KEY || !BREVO_SENDER_EMAIL || BREVO_API_KEY.startsWith('replace-with-')) {
+    const reason = 'Brevo email is not configured. Set BREVO_API_KEY and BREVO_SENDER_EMAIL on the server.';
+    console.warn(reason);
+    return { sent: false, reason, configurationError: true };
   }
   try {
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -198,13 +199,16 @@ async function sendBrevoEmail({ to, name, subject, textContent, htmlContent }) {
       })
     });
     if (!response.ok) {
-      console.warn(`Brevo email failed: ${response.status} ${await response.text()}`);
-      return false;
+      const providerMessage = await response.text();
+      const reason = `Brevo rejected the email (${response.status}). Check the verified sender and Brevo API key.`;
+      console.warn(`${reason} ${providerMessage}`);
+      return { sent: false, reason, providerStatus: response.status };
     }
-    return true;
+    return { sent: true };
   } catch (error) {
-    console.warn(`Brevo email failed: ${error.message}`);
-    return false;
+    const reason = `Brevo could not be reached: ${error.message}`;
+    console.warn(reason);
+    return { sent: false, reason };
   }
 }
 
@@ -473,18 +477,24 @@ server.post('/api/admin/customer-messages/send', async (req, res) => {
     const recipientName = payment?.cardholderName || payment?.billingName || user.name || 'there';
     const safeName = escapeHtml(recipientName);
     const safeBody = escapeHtml(body).replace(/\r?\n/g, '<br>');
-    const sent = await sendBrevoEmail({
+    const emailResult = await sendBrevoEmail({
       to: email,
       name: recipientName,
       subject,
       textContent: `Hi ${recipientName},\n\n${body}\n\nNovaCrypto`,
       htmlContent: `<!doctype html><html lang="en"><body style="margin:0;background:#f4f7fb;color:#172033;font-family:Arial,sans-serif;"><div style="padding:36px 16px;"><div style="max-width:600px;margin:0 auto;background:#fff;border:1px solid #e1e7f0;border-radius:16px;overflow:hidden;"><div style="padding:28px 32px;background:#102a43;color:#fff;font-size:13px;letter-spacing:2px;font-weight:bold;">NOVACRYPTO</div><div style="padding:32px;"><p style="margin:0 0 16px;font-size:18px;font-weight:600;color:#172033;">Hello ${safeName},</p><p style="margin:0;font-size:16px;line-height:1.7;color:#526174;">${safeBody}</p></div><div style="padding:18px 32px;background:#f8fafc;color:#8793a5;font-size:12px;">A personal message from NovaCrypto</div></div></div></body></html>`
     });
-    return { email, sent };
+    return { email, ...emailResult };
   }));
 
-  const failed = results.filter((result) => !result.sent).map((result) => result.email);
-  if (failed.length) return sendJson(res, 502, { error: `Email could not be sent to: ${failed.join(', ')}` });
+  const failed = results.filter((result) => !result.sent);
+  if (failed.length) {
+    const configurationError = failed.some((result) => result.configurationError);
+    return sendJson(res, configurationError ? 503 : 502, {
+      error: failed[0].reason,
+      failedRecipients: failed.map((result) => result.email)
+    });
+  }
 
   const messages = await getCustomerMessages();
   messages[day].subject = subject;
@@ -657,14 +667,14 @@ server.post('/users', async (req, res) => {
     router.db.set('balances', balances).write();
   }
 
-  const welcomeEmailSent = await sendBrevoEmail({
+  const welcomeEmailResult = await sendBrevoEmail({
     to: email,
     name: user.name,
     subject: 'Welcome to NovaCrypto',
     textContent: `Hi ${user.name},\n\nYour NovaCrypto account is ready. Complete your payment and wait for owner approval before trading.\n\nNovaCrypto`,
     htmlContent: `<p>Hi ${escapeHtml(user.name)},</p><p>Your NovaCrypto account is ready. Complete your payment and wait for owner approval before trading.</p><p>NovaCrypto</p>`
   });
-  return sendJson(res, 201, { ...user, welcomeEmailSent });
+  return sendJson(res, 201, { ...user, welcomeEmailSent: welcomeEmailResult.sent });
 });
 
 server.get('/api/admin/customers', (req, res) => {

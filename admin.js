@@ -269,7 +269,11 @@ async function sendCustomerMessageEmail() {
     customerMessages = result.messages;
     setCustomerMessageStatus(result.message, 'success');
   } catch (error) {
-    setCustomerMessageStatus(error.message.includes('502') ? 'Brevo could not send the email. Check the server log.' : 'Could not send this message.', 'error');
+    setCustomerMessageStatus(error.message.includes('503')
+      ? 'Email service is not configured on the server. Add the Brevo API key and verified sender email.'
+      : error.message.includes('502')
+        ? 'Brevo rejected the email. Check the verified sender and API key.'
+        : 'Could not send this message.', 'error');
   } finally {
     sendCustomerMessage.disabled = false;
   }

@@ -212,17 +212,10 @@ function updateTrade() {
 async function loadMarkets() { try { markets = await apiRequest('/api/markets'); renderMarkets(markets); updateTrade(); } catch { tradePrice.textContent = 'Market unavailable'; } }
 async function loadAccount() {
   const user = currentUser();
-  if (!user) { appContent.hidden = true; guestCard.hidden = false; paymentPanel.hidden = true; return; }
+  if (!user) { appContent.hidden = true; guestCard.hidden = false; return; }
   userName.textContent = user.name?.split(' ')[0] || 'Trader'; logoutButton.hidden = false;
   try {
-    const payments = await apiRequest('/payments');
-    const payment = payments[user.email.toLowerCase()];
-    if (payment?.status !== 'approved') {
-      appContent.hidden = true; guestCard.hidden = false; authForm.hidden = true; document.getElementById('guestLogin').hidden = true; paymentPanel.hidden = false;
-      setPaymentMessage(payment?.status === 'pending' ? 'Receipt received. Your account is waiting for owner approval.' : 'Complete payment and upload your receipt to unlock trading.', payment?.status === 'pending' ? 'success' : '');
-      return;
-    }
-    guestCard.hidden = true; paymentPanel.hidden = true; appContent.hidden = false;
+    guestCard.hidden = true; appContent.hidden = false;
     const [balance, portfolio] = await Promise.all([apiRequest(`/api/balance/${userEmail()}`), apiRequest(`/api/portfolio/${userEmail()}`)]);
     balanceValue.textContent = money(balance.balance); availableValue.textContent = money(balance.balance); portfolioValue.textContent = money(portfolio.totalValue); portfolioUpdated.textContent = portfolio.updatedAt ? `Updated ${new Date(portfolio.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'No holdings yet'; renderOrders(portfolio.orders);
     const assets = portfolio.assets || [];

@@ -253,10 +253,12 @@ async function saveCustomerMessageDraft() {
 }
 
 async function sendCustomerMessageEmail() {
-  const emails = Array.from(customerRecipient.selectedOptions).map((option) => option.value).filter(Boolean);
+  const selectedOptions = Array.from(customerRecipient.selectedOptions).map((option) => option.value).filter(Boolean);
+  const allCustomersSelected = customerRecipient.options.length > 0 && selectedOptions.length === customerRecipient.options.length;
+  const emails = allCustomersSelected ? [] : selectedOptions;
   const subject = customerMessageSubject.value.trim();
   const body = customerMessageBody.value.trim();
-  if (!emails.length || !subject || !body) {
+  if (!emails.length && !allCustomersSelected || !subject || !body) {
     setCustomerMessageStatus('Select a customer and enter a subject and message.', 'error');
     return;
   }
@@ -264,7 +266,7 @@ async function sendCustomerMessageEmail() {
   try {
     const result = await apiRequest('/api/admin/customer-messages/send', {
       method: 'POST',
-      body: JSON.stringify({ emails, day: selectedMessageDay, subject, body })
+      body: JSON.stringify({ emails, sendToAll: allCustomersSelected, day: selectedMessageDay, subject, body })
     });
     customerMessages = result.messages;
     setCustomerMessageStatus(result.message, 'success');
@@ -445,7 +447,7 @@ async function updateDeposit(id, status) {
 
 async function updatePayment(email, status) {
   try {
-    const payments = await apiRequest('/payments');
+    const payments = await apiRequest(`/payments?refresh=${Date.now()}`);
     if (!payments[email]) return;
     payments[email].status = status;
     payments[email].reviewedAt = new Date().toISOString();

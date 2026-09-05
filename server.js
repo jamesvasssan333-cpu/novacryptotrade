@@ -453,13 +453,25 @@ server.put('/api/admin/customer-messages', async (req, res) => {
 });
 
 server.post('/api/admin/customer-messages/send', async (req, res) => {
-  const emails = Array.isArray(req.body.emails)
+  let emails = Array.isArray(req.body.emails)
     ? [...new Set(req.body.emails.map(normalizeEmail).filter(Boolean))]
     : [normalizeEmail(req.body.email)].filter(Boolean);
+  const sendToAll = req.body.sendToAll === true;
   const day = String(req.body.day || '').toLowerCase();
   const subject = String(req.body.subject || '').trim().slice(0, 160);
   const body = String(req.body.body || '').trim().slice(0, 5000);
-  const users = router.db.get('users').value() || [];
+  let users = router.db.get('users').value() || [];
+  if (SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const remoteUsers = await supabaseRead('users', '?select=id,name,email');
+      users = remoteUsers.map((user) => ({ id: user.id, name: user.name, email: user.email }));
+    } catch (error) {
+      console.warn(`Supabase customer lookup failed: ${error.message}`);
+    }
+  }
+  if (sendToAll) {
+    emails = [...new Set(users.map((user) => normalizeEmail(user.email)).filter(Boolean))];
+  }
   const payments = router.db.get('payments').value() || {};
 
   if (!emails.length || !customerMessageDays.includes(day) || !subject || !body) {

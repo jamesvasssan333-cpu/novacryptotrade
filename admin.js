@@ -409,10 +409,7 @@ async function loadPayments() {
   refreshButton.disabled = true;
   setMessage('Loading payment submissions...');
   try {
-    const [data, customers] = await Promise.all([
-      apiRequest('/api/admin/data'),
-      apiRequest('/api/admin/customers')
-    ]);
+    const data = await apiRequest('/api/admin/data');
     const { payments, deposits, withdrawals, users, orders, balances, holdings, chatMessages } = data;
     renderPayments(payments);
     renderDeposits(deposits);
@@ -423,7 +420,7 @@ async function loadPayments() {
     renderBalances(balances, deposits, orders);
     renderHoldings(holdings);
     renderChatMessages(chatMessages);
-    renderCustomerRecipients(customers);
+    renderCustomerRecipients(users);
     await loadCustomerMessages();
     setMessage('Admin data loaded from Supabase.', 'success');
   } catch (error) {

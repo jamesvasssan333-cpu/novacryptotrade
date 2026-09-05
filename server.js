@@ -650,7 +650,7 @@ server.get('/api/admin/customers', (req, res) => {
   return sendJson(res, 200, users.map(({ password, ...user }) => user));
 });
 
-server.post('/api/orders', (req, res) => {
+server.post('/api/orders', async (req, res) => {
   const email = normalizeEmail(req.body.userEmail);
   const asset = String(req.body.asset || '').toUpperCase();
   const side = String(req.body.side || '').toLowerCase();
@@ -687,8 +687,8 @@ server.post('/api/orders', (req, res) => {
     id: Date.now()
   };
   router.db.get('orders').push(order).write();
-  void supabaseRequest('orders', 'POST', supabaseOrder(order), '?on_conflict=id');
-  return sendJson(res, 201, { order, balance: nextBalance, holdings: getHoldings(email) });
+  const supabaseSynced = await supabaseRequest('orders', 'POST', supabaseOrder(order), '?on_conflict=id');
+  return sendJson(res, 201, { order, balance: nextBalance, holdings: getHoldings(email), supabaseSynced });
 });
 
 server.use((req, res, next) => {

@@ -9,6 +9,7 @@ const balanceValue = document.getElementById('balanceValue');
 const availableValue = document.getElementById('availableValue');
 const portfolioValue = document.getElementById('portfolioValue');
 const portfolioUpdated = document.getElementById('portfolioUpdated');
+const ordersList = document.getElementById('ordersList');
 const homeMarkets = document.getElementById('homeMarkets');
 const marketList = document.getElementById('marketList');
 const marketSearch = document.getElementById('marketSearch');
@@ -63,6 +64,23 @@ async function apiRequest(endpoint, options = {}) {
 function money(value) { return `$${Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; }
 function price(value) { return `$${Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 })}`; }
 function userEmail() { return encodeURIComponent(currentUser()?.email || ''); }
+
+function renderOrders(orders = []) {
+  if (!ordersList) return;
+  ordersList.replaceChildren();
+  if (!orders.length) {
+    ordersList.innerHTML = '<p class="form-message">No orders yet. Place your first trade to see it here.</p>';
+    return;
+  }
+  orders.forEach((order) => {
+    const item = document.createElement('article');
+    item.className = 'order-item';
+    const side = order.side === 'buy' ? 'Buy' : 'Sell';
+    const status = order.status || 'open';
+    item.innerHTML = `<div><strong>${order.asset} / USD</strong><small>${side} · ${order.orderType || 'Market'}</small></div><div><strong>${Number(order.amount || 0).toFixed(8)} ${order.asset}</strong><small>${price(order.price)} · ${money(order.total)}</small></div><span class="order-status ${status}">${status}</span>`;
+    ordersList.append(item);
+  });
+}
 
 function setAuthMessage(message, type = '') { authMessage.textContent = message; authMessage.className = `form-message ${type}`; }
 function setPaymentMessage(message, type = '') { paymentMessage.textContent = message; paymentMessage.className = `form-message ${type}`; }
@@ -169,7 +187,7 @@ async function loadAccount() {
     }
     guestCard.hidden = true; paymentPanel.hidden = true; appContent.hidden = false;
     const [balance, portfolio] = await Promise.all([apiRequest(`/api/balance/${userEmail()}`), apiRequest(`/api/portfolio/${userEmail()}`)]);
-    balanceValue.textContent = money(balance.balance); availableValue.textContent = money(balance.balance); portfolioValue.textContent = money(portfolio.totalValue); portfolioUpdated.textContent = portfolio.updatedAt ? `Updated ${new Date(portfolio.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'No holdings yet';
+    balanceValue.textContent = money(balance.balance); availableValue.textContent = money(balance.balance); portfolioValue.textContent = money(portfolio.totalValue); portfolioUpdated.textContent = portfolio.updatedAt ? `Updated ${new Date(portfolio.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'No holdings yet'; renderOrders(portfolio.orders);
     const assets = portfolio.assets || [];
     document.getElementById('holdingList').innerHTML = assets.length ? assets.map((item) => `<button class="holding-row" data-symbol="${item.asset}" type="button"><span class="coin-dot ${item.asset.toLowerCase()}">${item.asset[0]}</span><div><strong>${item.asset}</strong><small>${item.quantity} units</small></div><div class="row-price"><strong>${money(item.value)}</strong><small>${Number(item.change24h || 0).toFixed(2)}%</small></div></button>`).join('') : '<p class="form-message">No holdings yet. Place your first trade.</p>';
   } catch { tradeMessage.textContent = 'Account data is temporarily unavailable.'; }

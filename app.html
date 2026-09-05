@@ -81,9 +81,14 @@
           <div class="holding-list" id="holdingList"></div>
           <section class="funds-panel"><div class="section-heading"><h2>Deposit or withdraw</h2></div><p class="funds-rules">Withdrawals unlock after $500 in approved deposits and 10 completed trades.</p><div class="segmented funds-switch"><button class="active" data-funds-mode="deposit" type="button">Deposit</button><button data-funds-mode="withdraw" type="button">Withdraw</button></div><div class="deposit-wallet" id="depositWallet"><div class="wallet-box"><span>Send funds to this Bitcoin wallet</span><img class="deposit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bitcoin%3Abc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw" alt="QR code for the NovaCrypto Bitcoin deposit wallet" /><code>bc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw</code><small>Network: Bitcoin (BTC)</small><button type="button" id="depositWalletCopy">Copy wallet address</button></div><p class="deposit-note">Send the funds from your own wallet, then enter the amount below and submit it for owner approval.</p></div><form id="appFundsForm" class="trade-form"><label>Amount (USD)<input id="fundsAmount" type="number" min="1" step="0.01" placeholder="500.00" required /></label><div class="withdraw-fields" id="withdrawFields" hidden><label>Full name<input id="withdrawName" type="text" placeholder="Your full name" /></label><label>Wallet address<input id="withdrawAddress" type="text" placeholder="Bitcoin wallet address" /></label></div><button class="primary-button" type="submit" id="fundsSubmit">I have sent my deposit</button><p class="form-message" id="fundsMessage" role="status"></p></form></section>
         </section>
+
+        <section class="view" data-view="orders">
+          <div class="view-heading"><div><span class="eyebrow">Trading activity</span><h1>Orders</h1></div></div>
+          <div class="orders-list" id="ordersList"></div>
+        </section>
       </section>
 
-      <nav class="bottom-nav" aria-label="Mobile app navigation"><button class="active" data-go="home" type="button"><span>⌂</span>Home</button><button data-go="markets" type="button"><span>◌</span>Markets</button><button data-go="trade" type="button"><span class="trade-nav-icon">+</span>Trade</button><button data-go="portfolio" type="button"><span>◈</span>Portfolio</button></nav>
+      <nav class="bottom-nav" aria-label="Mobile app navigation"><button class="active" data-go="home" type="button"><span>⌂</span>Home</button><button data-go="markets" type="button"><span>◌</span>Markets</button><button data-go="trade" type="button"><span class="trade-nav-icon">+</span>Trade</button><button data-go="portfolio" type="button"><span>◈</span>Portfolio</button><button data-go="orders" type="button"><span>≡</span>Orders</button></nav>
     </main>
     <script src="app.js"></script>
   </body>

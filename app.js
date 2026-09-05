@@ -1,4 +1,5 @@
 const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://novacryptotrade.onrender.com';
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js'));
 const currentUserKey = 'novacrypto_current_user';
 const appContent = document.getElementById('appContent');
 const guestCard = document.getElementById('guestCard');

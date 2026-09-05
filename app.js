@@ -10,6 +10,8 @@ const availableValue = document.getElementById('availableValue');
 const portfolioValue = document.getElementById('portfolioValue');
 const portfolioUpdated = document.getElementById('portfolioUpdated');
 const ordersList = document.getElementById('ordersList');
+const ordersTotalCount = document.getElementById('ordersTotalCount');
+const ordersTotalValue = document.getElementById('ordersTotalValue');
 const orderDetailsDialog = document.getElementById('orderDetailsDialog');
 const closeOrderDetails = document.getElementById('closeOrderDetails');
 const homeMarkets = document.getElementById('homeMarkets');
@@ -69,6 +71,8 @@ function price(value) { return `$${Number(value || 0).toLocaleString('en-US', { 
 function userEmail() { return encodeURIComponent(currentUser()?.email || ''); }
 
 function renderOrders(orders = []) {
+  if (ordersTotalCount) ordersTotalCount.textContent = orders.length;
+  if (ordersTotalValue) ordersTotalValue.textContent = money(orders.reduce((total, order) => total + Number(order.total || 0), 0));
   if (!ordersList) return;
   ordersList.replaceChildren();
   if (!orders.length) {

@@ -29,9 +29,13 @@ const MINIMUM_WITHDRAWAL_TRADES = 10;
 const WELCOME_BONUS = 50000;
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://zewtrvkaunkkkzyfxghr.supabase.co';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
-const BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || '';
-const BREVO_SENDER_NAME = process.env.BREVO_SENDER_NAME || 'NovaCrypto';
+function environmentValue(name, fallback = '') {
+  return String(process.env[name] || fallback).trim().replace(/^['"]|['"]$/g, '');
+}
+
+const BREVO_API_KEY = environmentValue('BREVO_API_KEY');
+const BREVO_SENDER_EMAIL = environmentValue('BREVO_SENDER_EMAIL');
+const BREVO_SENDER_NAME = environmentValue('BREVO_SENDER_NAME', 'NovaCrypto');
 
 server.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NovaCrypto | Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="dashboard">
+    <div class="page-shell">
+      <aside class="trade-sidebar" aria-label="Trading navigation">
+        <a href="index.html" class="trade-sidebar-brand" aria-label="NovaCrypto home">N</a>
+        <nav>
+          <a href="trading-dashboard.htm"><span>Trade</span></a>
+          <a href="market.html"><span>Markets</span></a>
+          <a href="trad.html" class="active-link"><span>Portfolio</span></a>
+          <a href="order.html"><span>Orders</span></a>
+        </nav>
+        <a href="index.html" class="trade-sidebar-exit" aria-label="Exit dashboard">Exit</a>
+      </aside>
+
+      <header class="site-header">
+        <div class="container nav-wrap">
+          <a href="index.html" class="brand" aria-label="NovaCrypto home">
+            <span class="brand-mark">N</span>
+            <span>NovaCrypto</span>
+          </a>
+
+          <nav class="main-nav" aria-label="Main navigation">
+            <a href="trading-dashboard.htm">Trade</a>
+            <a href="market.html">Markets</a>
+            <a href="trad.html" class="active-link">Portfolio</a>
+            <a href="order.html">Orders</a>
+          </nav>
+
+          <div class="nav-actions">
+            <button type="button" id="logoutBtn" class="btn btn-ghost">Log out</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="section-space">
+        <div class="container">
+          <div class="page-heading">
+            <span class="eyebrow">Portfolio</span>
+            <h1>Overview of your holdings</h1>
+          </div>
+
+          <div class="portfolio-summary-grid">
+            <div class="panel portfolio-summary"><span>Total portfolio value</span><strong id="portfolioTotal">$0.00</strong></div>
+            <div class="panel portfolio-summary"><span>Available cash</span><strong id="portfolioCash">$0.00</strong></div>
+            <div class="panel portfolio-summary"><span>Invested value</span><strong id="portfolioInvested">$0.00</strong></div>
+            <div class="panel portfolio-summary"><span>Last updated</span><strong id="portfolioUpdated">--</strong></div>
+          </div>
+
+          <div class="portfolio-grid">
+            <section class="panel portfolio-card">
+              <div class="dashboard-card-head">
+                <span>Holdings</span>
+                <span id="holdingsStatus">Live</span>
+              </div>
+
+              <div class="holdings-list" id="holdingsList"></div>
+            </section>
+
+            <aside class="panel portfolio-card">
+              <div class="dashboard-card-head">
+                <span>Allocation</span>
+                <span>Live</span>
+              </div>
+
+              <div class="allocation-meters" id="allocationMeters"></div>
+            </aside>
+          </div>
+
+          <section class="panel portfolio-card portfolio-activity">
+            <div class="dashboard-card-head"><span>Recent portfolio activity</span><a href="order.html">View all orders</a></div>
+            <div class="portfolio-orders" id="portfolioOrders"></div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

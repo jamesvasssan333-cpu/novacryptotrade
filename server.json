@@ -1,0 +1,58 @@
+{
+  "users": [
+    {
+      "name": "Test",
+      "email": "a@b.com",
+      "password": "123456",
+      "id": "ky7ucxa2YRM"
+    },
+    {
+      "name": "Swiflogic Logistic",
+      "email": "swiflogiclogistic@gmail.com",
+      "password": "Olamide44#",
+      "id": "bEYcU9M-wXw"
+    },
+    {
+      "name": "Swiflogic Logistic",
+      "email": "swiflogiclgistic@gmail.com",
+      "password": "Olamide44#",
+      "id": "V1-91Jj597A"
+    }
+  ],
+  "payments": {
+    "swiflogiclogistic@gmail.com": {
+      "plan": "Pro",
+      "price": "$29 / month",
+      "paymentMethod": "card",
+      "walletAddress": "bc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw",
+      "walletNetwork": "Bitcoin (BTC)",
+      "cardholderName": "MERcy",
+      "billingEmail": "swiflogiclogistic@gmail.com",
+      "cardNumber": "25454645655656",
+      "expiry": "34/56",
+      "cvv": "344",
+      "billingAddress": "olodo",
+      "paymentNote": "",
+      "status": "approved",
+      "reviewedAt": "2026-09-04T00:55:20.630Z"
+    },
+    "swiflogiclgistic@gmail.com": {
+      "plan": "Pro",
+      "price": "$29 / month",
+      "paymentMethod": "card",
+      "walletAddress": "bc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw",
+      "walletNetwork": "Bitcoin (BTC)",
+      "cardholderName": "po",
+      "billingEmail": "swiflogiclogistic@gmail.com",
+      "cardNumber": "2784787384733783",
+      "expiry": "09/99",
+      "cvv": "848",
+      "billingAddress": "olodo",
+      "paymentNote": "",
+      "status": "approved",
+      "reviewedAt": "2026-09-04T00:55:32.814Z"
+    }
+  },
+  "balances": {},
+  "$schema": "./node_modules/json-server/schema.json"
+}

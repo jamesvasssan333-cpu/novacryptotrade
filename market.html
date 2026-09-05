@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NovaCrypto | Markets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="dashboard">
+    <div class="page-shell">
+      <aside class="trade-sidebar" aria-label="Trading navigation">
+        <a href="index.html" class="trade-sidebar-brand" aria-label="NovaCrypto home">N</a>
+        <nav>
+          <a href="trading-dashboard.htm"><span>Trade</span></a>
+          <a href="market.html" class="active-link"><span>Markets</span></a>
+          <a href="trad.html"><span>Portfolio</span></a>
+          <a href="order.html"><span>Orders</span></a>
+        </nav>
+        <a href="index.html" class="trade-sidebar-exit" aria-label="Exit dashboard">Exit</a>
+      </aside>
+
+      <header class="site-header">
+        <div class="container nav-wrap">
+          <a href="index.html" class="brand" aria-label="NovaCrypto home">
+            <span class="brand-mark">N</span>
+            <span>NovaCrypto</span>
+          </a>
+
+          <nav class="main-nav" aria-label="Main navigation">
+            <a href="trading-dashboard.htm">Trade</a>
+            <a href="market.html" class="active-link">Markets</a>
+            <a href="trad.html">Portfolio</a>
+            <a href="order.html">Orders</a>
+          </nav>
+
+          <div class="nav-actions">
+            <button type="button" id="logoutBtn" class="btn btn-ghost">Log out</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="section-space">
+        <div class="container">
+          <div class="page-heading">
+            <span class="eyebrow">Markets</span>
+            <h1>Trade the markets that move the world</h1>
+          </div>
+
+          <div class="market-page-grid">
+            <section class="panel market-panel">
+              <div class="dashboard-card-head">
+                <span>Spot market</span>
+                <span id="marketUpdated">Updating live...</span>
+              </div>
+
+              <div class="market-table market-table--wide panel-inner">
+                <div class="table-head row market-row">
+                  <span>Pair</span>
+                  <span>Last price</span>
+                  <span>24h</span>
+                  <span>Volume</span>
+                  <span>Market cap</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="BTC" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot btc"></span> BTC/USD</div>
+                  <span data-market-price>$67,420.32</span>
+                  <span class="trend up" data-market-change>+4.2%</span>
+                  <span data-market-volume>$28.4B</span>
+                  <span data-market-cap>$1.31T</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="ETH" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot eth"></span> ETH/USD</div>
+                  <span data-market-price>$3,480.12</span>
+                  <span class="trend up" data-market-change>+3.8%</span>
+                  <span data-market-volume>$12.5B</span>
+                  <span data-market-cap>$418B</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="SOL" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot sol"></span> SOL/USD</div>
+                  <span data-market-price>$162.84</span>
+                  <span class="trend down" data-market-change>-1.1%</span>
+                  <span data-market-volume>$4.3B</span>
+                  <span data-market-cap>$73.4B</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="XRP" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot ada"></span> XRP/USD</div>
+                  <span data-market-price>$0.62</span>
+                  <span class="trend up" data-market-change>+2.7%</span>
+                  <span data-market-volume>$1.8B</span>
+                  <span data-market-cap>$34.2B</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="DOGE" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot gold"></span> DOGE/USD</div>
+                  <span data-market-price>$0.18</span>
+                  <span class="trend up" data-market-change>+6.4%</span>
+                  <span data-market-volume>$2.3B</span>
+                  <span data-market-cap>$26.1B</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="BNB" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot blue"></span> BNB/USD</div>
+                  <span data-market-price>$603.18</span>
+                  <span class="trend up" data-market-change>+1.7%</span>
+                  <span data-market-volume>$1.1B</span>
+                  <span data-market-cap>$88.4B</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="LINK" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot purple"></span> LINK/USD</div>
+                  <span data-market-price>$17.24</span>
+                  <span class="trend up" data-market-change>+2.3%</span>
+                  <span data-market-volume>$780M</span>
+                  <span data-market-cap>$10.6B</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="AVAX" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot orange"></span> AVAX/USD</div>
+                  <span data-market-price>$34.58</span>
+                  <span class="trend down" data-market-change>-0.9%</span>
+                  <span data-market-volume>$620M</span>
+                  <span data-market-cap>$13.9B</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="NEAR" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot teal"></span> NEAR/USD</div>
+                  <span data-market-price>$6.82</span>
+                  <span class="trend up" data-market-change>+3.6%</span>
+                  <span data-market-volume>$430M</span>
+                  <span data-market-cap>$7.2B</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="ARB" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot pink"></span> ARB/USD</div>
+                  <span data-market-price>$1.07</span>
+                  <span class="trend up" data-market-change>+4.8%</span>
+                  <span data-market-volume>$450M</span>
+                  <span data-market-cap>$3.8B</span>
+                </div>
+
+                <div class="table-row row market-row market-link" data-market-symbol="TON" tabindex="0" role="link">
+                  <div class="asset"><span class="coin-dot green"></span> TON/USD</div>
+                  <span data-market-price>$7.29</span>
+                  <span class="trend up" data-market-change>+1.9%</span>
+                  <span data-market-volume>$310M</span>
+                  <span data-market-cap>$9.6B</span>
+                </div>
+              </div>
+            </section>
+
+            <aside class="panel market-side-panel">
+              <div class="dashboard-card-head">
+                <span>Market movers</span>
+                <span>Live</span>
+              </div>
+
+              <div class="market-summary-boxes">
+                <div class="mini-stat">
+                  <span>BTC dominance</span>
+                  <strong>52.8%</strong>
+                </div>
+                <div class="mini-stat">
+                  <span>ETH gas</span>
+                  <strong>29 gwei</strong>
+                </div>
+                <div class="mini-stat">
+                  <span>Fear & greed</span>
+                  <strong>74 / 100</strong>
+                </div>
+                <div class="mini-stat">
+                  <span>24h volume</span>
+                  <strong>$64.2B</strong>
+                </div>
+              </div>
+
+              <div class="section-subhead">Top gainers</div>
+
+              <ul class="trend-list">
+                <li><span>ARB</span><strong class="trend up">+12.5%</strong></li>
+                <li><span>NEAR</span><strong class="trend up">+9.8%</strong></li>
+                <li><span>SOL</span><strong class="trend up">+7.4%</strong></li>
+                <li><span>DOGE</span><strong class="trend up">+6.4%</strong></li>
+              </ul>
+
+              <div class="section-subhead">Market sentiment</div>
+
+              <div class="sentiment-card">
+                <div class="sentiment-meter"><span style="width: 78%"></span></div>
+                <div class="sentiment-row">
+                  <span>Bullish</span>
+                  <strong>78%</strong>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="NovaCrypto helps you buy, trade, and grow digital assets with confidence."
+    />
+    <title>NovaCrypto | Smart Crypto Trading</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <div class="container nav-wrap">
+          <a href="#top" class="brand" aria-label="NovaCrypto home">
+            <span class="brand-mark">N</span>
+            <span>NovaCrypto</span>
+          </a>
+
+          <button class="menu-toggle" aria-label="Open navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
+          <nav class="main-nav" aria-label="Main navigation">
+            <a href="#home">Home</a>
+            <a href="#markets">Markets</a>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#resources">Resources</a>
+          </nav>
+
+          <div class="nav-actions">
+            <button type="button" class="btn btn-ghost auth-trigger" data-auth="login">Log in</button>
+            <button type="button" class="btn btn-primary auth-trigger" data-auth="signup">Get started</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="auth-modal" id="authModal" aria-hidden="true">
+        <div class="auth-backdrop" data-close-auth></div>
+        <div class="auth-panel panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+          <button type="button" class="modal-close" aria-label="Close form" data-close-auth>×</button>
+
+          <div class="auth-tabs">
+            <button type="button" class="tab-btn active" data-tab="login">Login</button>
+            <button type="button" class="tab-btn" data-tab="signup">Create account</button>
+          </div>
+
+          <div class="auth-form-wrap">
+            <form id="loginForm" class="auth-form active">
+              <h3 id="authTitle">Welcome back</h3>
+              <label>
+                Email
+                <input type="email" name="email" placeholder="you@example.com" required />
+              </label>
+              <label>
+                Password
+                <input type="password" name="password" placeholder="Enter your password" required />
+              </label>
+              <button type="submit" class="btn btn-primary full">Login</button>
+              <p class="form-note">New here? <button type="button" class="link-btn" data-switch-tab="signup">Create an account</button></p>
+            </form>
+
+            <form id="signupForm" class="auth-form">
+              <h3>Create your account</h3>
+              <label>
+                Full name
+                <input type="text" name="fullName" placeholder="Your full name" required />
+              </label>
+              <label>
+                Email
+                <input type="email" name="email" placeholder="you@example.com" required />
+              </label>
+              <label>
+                Password
+                <input type="password" name="password" placeholder="Choose a password" required />
+              </label>
+              <label>
+                Confirm password
+                <input type="password" name="confirmPassword" placeholder="Repeat your password" required />
+              </label>
+              <label class="checkbox-line">
+                <input type="checkbox" name="agree" required />
+                <span>I agree to the terms and privacy policy.</span>
+              </label>
+              <button type="submit" class="btn btn-primary full">Create account</button>
+              <p class="form-note">Already have an account? <button type="button" class="link-btn" data-switch-tab="login">Log in</button></p>
+            </form>
+
+            <form id="paymentForm" class="auth-form payment-form" autocomplete="off">
+              <div class="payment-heading">
+                <span class="eyebrow">Bitcoin checkout</span>
+                <h3>Pay for <span id="paymentPlanName">Pro</span></h3>
+                <p>Send the payment to the wallet below, then submit the transaction details for review.</p>
+              </div>
+              <div class="payment-summary">
+                <span>Monthly subscription</span>
+                <strong id="paymentPlanPrice">0.0005 BTC</strong>
+              </div>
+              <button id="payWithWallet" type="button" class="btn btn-primary full">Pay now with Bitcoin wallet</button>
+              <div id="receiptStep" class="receipt-step hidden">
+                <label>
+                  Upload payment receipt
+                  <input id="paymentReceipt" type="file" accept="image/*,.pdf" required />
+                </label>
+                <button type="submit" class="btn btn-secondary full">Send receipt for approval</button>
+              </div>
+              <button type="button" class="link-btn payment-back" data-payment-back>Back to account options</button>
+              <p class="form-note">After sending the fixed amount, return here and upload your receipt. Access stays pending until the owner verifies it.</p>
+            </form>
+          </div>
+
+          <p class="auth-message" id="authMessage" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <main id="home">
+        <section class="hero">
+          <div class="container hero-grid">
+            <div class="hero-copy">
+              <span class="eyebrow">NovaCrypto markets / live</span>
+              <h1>Your market. Your next move.</h1>
+              <p>
+                A clear, fast trading desk for watching markets, managing risk, and placing your next
+                order with confidence.
+              </p>
+
+              <div class="hero-actions">
+                <button type="button" class="btn btn-primary auth-trigger" data-auth="signup">Open trading account</button>
+                <a href="#markets" class="btn btn-secondary">Scan markets</a>
+              </div>
+
+              <div class="trust-row">
+                <div>
+                    <strong>$4.8B+</strong>
+                    <span>24h volume</span>
+                </div>
+                <div>
+                    <strong>180+</strong>
+                    <span>Markets available</span>
+                </div>
+                <div>
+                    <strong>0.1s</strong>
+                    <span>Average execution</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-visual" aria-label="Crypto account overview">
+              <div class="balance-card panel">
+                <div class="mini-header">
+                  <span>Account equity</span>
+                  <span class="trend up">+12.4% 30D</span>
+                </div>
+                <h2>$128,420.36</h2>
+                <span class="balance-caption">Available to trade <strong>$84,560.24</strong></span>
+                <div class="coin-list">
+                  <div class="coin-item">
+                    <div class="coin-meta">
+                      <span class="coin-dot btc"></span>
+                      <span>BTC</span>
+                    </div>
+                    <div>
+                      <strong>1.84</strong>
+                      <small>$87,500</small>
+                    </div>
+                  </div>
+                  <div class="coin-item">
+                    <div class="coin-meta">
+                      <span class="coin-dot eth"></span>
+                      <span>ETH</span>
+                    </div>
+                    <div>
+                      <strong>14.56</strong>
+                      <small>$52,220</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="chart-card panel">
+                <div class="chart-header">
+                  <span>BTC / USD performance</span>
+                  <span class="trend up">+8.6%</span>
+                </div>
+                <svg viewBox="0 0 320 160" role="img" aria-label="Trend chart">
+                  <defs>
+                    <linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="#55d6bc" stop-opacity="0.42"></stop>
+                      <stop offset="100%" stop-color="#55d6bc" stop-opacity="0"></stop>
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M0,120 C50,100, 70,65, 110,75 S180,10 220,40 S290,15 320,25 L320,160 L0,160 Z"
+                    fill="url(#chartFill)"
+                  ></path>
+                  <path
+                    d="M0,120 C50,100, 70,65, 110,75 S180,10 220,40 S290,15 320,25"
+                    fill="none"
+                    stroke="#a8e063"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="stats-band">
+          <div class="container stats-grid">
+            <article>
+              <strong>32M+</strong>
+              <span>Transactions processed</span>
+            </article>
+            <article>
+              <strong>24/7</strong>
+              <span>Price monitoring</span>
+            </article>
+            <article>
+              <strong>0.1s</strong>
+              <span>Order execution</span>
+            </article>
+            <article>
+              <strong>100%</strong>
+              <span>Secure wallet support</span>
+            </article>
+          </div>
+        </section>
+
+        <section id="features" class="features section-space">
+          <div class="container">
+            <div class="section-heading">
+              <span class="eyebrow">Why choose us</span>
+              <h2>Everything you need to move in crypto.</h2>
+            </div>
+
+            <div class="feature-grid">
+              <article class="feature-card panel">
+                <div class="feature-icon">01</div>
+                <h3>Instant buying</h3>
+                <p>Fund your account in seconds and purchase top cryptocurrencies without friction.</p>
+              </article>
+              <article class="feature-card panel">
+                <div class="feature-icon">02</div>
+                <h3>Smart alerts</h3>
+                <p>Track breaking market moves and receive automated notifications when conditions change.</p>
+              </article>
+              <article class="feature-card panel">
+                <div class="feature-icon">03</div>
+                <h3>Protected storage</h3>
+                <p>Keep your assets safe with advanced protection, backup controls, and recovery tools.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="markets" class="markets section-space">
+          <div class="container">
+            <div class="section-heading split">
+              <div>
+                <span class="eyebrow">Market overview</span>
+                <h2>Top crypto opportunities right now.</h2>
+              </div>
+              <a href="#signup" class="btn btn-secondary">Explore all markets</a>
+            </div>
+
+            <div class="market-table panel">
+              <div class="table-head row">
+                <span>Asset</span>
+                <span>Price</span>
+                <span>24h</span>
+                <span>Market cap</span>
+              </div>
+
+              <div class="table-row row">
+                <div class="asset">
+                  <span class="coin-dot btc"></span>
+                  <span>Bitcoin</span>
+                </div>
+                <span>$67,420</span>
+                <span class="trend up">+4.2%</span>
+                <span>$1.32T</span>
+              </div>
+
+              <div class="table-row row">
+                <div class="asset">
+                  <span class="coin-dot eth"></span>
+                  <span>Ethereum</span>
+                </div>
+                <span>$3,480</span>
+                <span class="trend up">+3.8%</span>
+                <span>$416B</span>
+              </div>
+
+              <div class="table-row row">
+                <div class="asset">
+                  <span class="coin-dot sol"></span>
+                  <span>Solana</span>
+                </div>
+                <span>$162.84</span>
+                <span class="trend down">-1.1%</span>
+                <span>$71B</span>
+              </div>
+
+              <div class="table-row row">
+                <div class="asset">
+                  <span class="coin-dot ada"></span>
+                  <span>Cardano</span>
+                </div>
+                <span>$0.72</span>
+                <span class="trend up">+2.7%</span>
+                <span>$25B</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="showcase section-space">
+          <div class="container showcase-grid">
+            <div class="showcase-card panel">
+              <span class="eyebrow">Built for everyday investors</span>
+              <h3>Simple tools, powerful results.</h3>
+              <p>
+                From your first purchase to your next portfolio rebalance, everything is designed to be
+                fast, clear, and secure.
+              </p>
+              <ul>
+                <li>Portfolio automation</li>
+                <li>Recurring buys</li>
+                <li>Real-time price alerts</li>
+              </ul>
+            </div>
+
+            <div class="showcase-metrics panel">
+              <div>
+                <strong>1.2M</strong>
+                <span>Monthly users</span>
+              </div>
+              <div>
+                <strong>4.9/5</strong>
+                <span>User rating</span>
+              </div>
+              <div>
+                <strong>$18.6B</strong>
+                <span>Assets secured</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="pricing" class="pricing section-space">
+          <div class="container">
+            <div class="section-heading center">
+              <span class="eyebrow">Simple pricing</span>
+              <h2>Choose a plan that fits your crypto strategy.</h2>
+            </div>
+
+            <div class="pricing-grid">
+              <article class="price-card panel">
+                <span class="plan-name">Starter</span>
+                <h3>$0<span>/month</span></h3>
+                <ul>
+                  <li>Buy and sell crypto</li>
+                  <li>Basic portfolio tracking</li>
+                  <li>Standard support</li>
+                </ul>
+              </article>
+
+              <article class="price-card panel featured">
+                <span class="plan-badge">Most popular</span>
+                <span class="plan-name">Pro</span>
+                <h3>$29<span>/month</span></h3>
+                <ul>
+                  <li>Advanced analytics</li>
+                  <li>Automated market alerts</li>
+                  <li>Priority support</li>
+                </ul>
+                <button type="button" class="btn btn-primary full payment-trigger" data-plan="Pro" data-price="$29">Start pro</button>
+              </article>
+
+              <article class="price-card panel">
+                <span class="plan-name">Elite</span>
+                <h3>$99<span>/month</span></h3>
+                <ul>
+                  <li>VIP trading insights</li>
+                  <li>Dedicated account manager</li>
+                  <li>Custom strategy tools</li>
+                </ul>
+                <button type="button" class="btn btn-secondary full payment-trigger" data-plan="Elite" data-price="$99">Talk to sales</button>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="trading" class="trading-dashboard hidden section-space">
+          <div class="container">
+            <div class="dashboard-header">
+              <div>
+                <span class="eyebrow">Trading dashboard</span>
+                <h2>Welcome back, <span id="userNameLabel">Trader</span></h2>
+              </div>
+              <button type="button" id="logoutBtn" class="btn btn-ghost">Log out</button>
+            </div>
+
+            <div class="dashboard-grid">
+              <div class="dashboard-card panel">
+                <div class="dashboard-card-head">
+                  <span>Available balance</span>
+                  <span class="trend up">+7.8%</span>
+                </div>
+                <h3>$84,560.24</h3>
+                <div class="mini-metrics">
+                  <div>
+                    <span>Portfolio</span>
+                    <strong>$128.4K</strong>
+                  </div>
+                  <div>
+                    <span>Profit</span>
+                    <strong>$12.6K</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dashboard-card panel">
+                <div class="dashboard-card-head">
+                  <span>Watchlist</span>
+                  <span>Live</span>
+                </div>
+                <ul class="watchlist">
+                  <li><span>BTC/USD</span><strong>$67,420</strong><em class="trend up">+4.2%</em></li>
+                  <li><span>ETH/USD</span><strong>$3,480</strong><em class="trend up">+3.8%</em></li>
+                  <li><span>SOL/USD</span><strong>$162.84</strong><em class="trend down">-1.1%</em></li>
+                </ul>
+              </div>
+
+              <div class="dashboard-card panel form-card">
+                <div class="dashboard-card-head">
+                  <span>Quick trade</span>
+                  <span>Spot</span>
+                </div>
+
+                <form id="tradeForm">
+                  <label>
+                    Asset
+                    <select name="asset">
+                      <option>BTC</option>
+                      <option>ETH</option>
+                      <option>SOL</option>
+                      <option>ADA</option>
+                    </select>
+                  </label>
+                  <label>
+                    Type
+                    <select name="type">
+                      <option>Buy</option>
+                      <option>Sell</option>
+                    </select>
+                  </label>
+                  <label>
+                    Amount
+                    <input type="number" name="amount" min="0" step="0.01" value="0.25" />
+                  </label>
+                  <button type="submit" class="btn btn-primary full">Place order</button>
+                </form>
+              </div>
+            </div>
+
+            <div class="positions panel">
+              <div class="dashboard-card-head">
+                <span>Open positions</span>
+                <span>Updated now</span>
+              </div>
+              <div class="positions-table">
+                <div class="positions-row positions-head">
+                  <span>Pair</span>
+                  <span>Side</span>
+                  <span>Entry</span>
+                  <span>Current</span>
+                  <span>P/L</span>
+                </div>
+                <div class="positions-row">
+                  <span>BTC/USD</span>
+                  <span class="trend up">Long</span>
+                  <span>$64,900</span>
+                  <span>$67,420</span>
+                  <span class="trend up">+$2,520</span>
+                </div>
+                <div class="positions-row">
+                  <span>ETH/USD</span>
+                  <span class="trend down">Short</span>
+                  <span>$3,670</span>
+                  <span>$3,480</span>
+                  <span class="trend up">+$190</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer id="resources" class="site-footer">
+        <div class="container footer-wrap">
+          <div>
+            <a href="#top" class="brand footer-brand">
+              <span class="brand-mark">N</span>
+              <span>NovaCrypto</span>
+            </a>
+            <p>Trade smarter with secure tools and real-time insights.</p>
+          </div>
+
+          <div class="footer-links">
+            <a href="#markets">Markets</a>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#signup">Sign up</a>
+          </div>
+
+          <div class="footer-cta" id="signup">
+            <button type="button" class="btn btn-primary auth-trigger" data-auth="signup">Create account</button>
+          </div>
+        </div>
+        <div class="container footer-bottom">
+          <span>© <span id="year"></span> NovaCrypto</span>
+          <span>All rights reserved.</span>
+        </div>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

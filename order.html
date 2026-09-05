@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NovaCrypto | Orders</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="dashboard">
+    <div class="page-shell">
+      <aside class="trade-sidebar" aria-label="Trading navigation">
+        <a href="index.html" class="trade-sidebar-brand" aria-label="NovaCrypto home">N</a>
+        <nav>
+          <a href="trading-dashboard.htm"><span>Trade</span></a>
+          <a href="market.html"><span>Markets</span></a>
+          <a href="trad.html"><span>Portfolio</span></a>
+          <a href="order.html" class="active-link"><span>Orders</span></a>
+        </nav>
+        <a href="index.html" class="trade-sidebar-exit" aria-label="Exit dashboard">Exit</a>
+      </aside>
+
+      <header class="site-header">
+        <div class="container nav-wrap">
+          <a href="index.html" class="brand" aria-label="NovaCrypto home">
+            <span class="brand-mark">N</span>
+            <span>NovaCrypto</span>
+          </a>
+
+          <nav class="main-nav" aria-label="Main navigation">
+            <a href="trading-dashboard.htm">Trade</a>
+            <a href="market.html">Markets</a>
+            <a href="trad.html">Portfolio</a>
+            <a href="order.html" class="active-link">Orders</a>
+          </nav>
+
+          <div class="nav-actions">
+            <button type="button" id="logoutBtn" class="btn btn-ghost">Log out</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="section-space">
+        <div class="container">
+          <div class="page-heading">
+            <span class="eyebrow">Orders</span>
+            <h1>Track your trading orders</h1>
+          </div>
+
+          <div class="order-page-grid">
+            <section class="panel order-list-panel">
+              <div class="dashboard-card-head">
+                <span>Recent orders</span>
+                <span>All status</span>
+              </div>
+
+              <div class="orders-table">
+                <div class="orders-row orders-head">
+                  <span>Pair</span>
+                  <span>Side</span>
+                  <span>Type</span>
+                  <span>Amount</span>
+                  <span>Status</span>
+                </div>
+
+                <div class="orders-row">
+                  <span>BTC/USD</span>
+                  <span class="trend up">Buy</span>
+                  <span>Market</span>
+                  <span>0.25 BTC</span>
+                  <span class="status-filled">Filled</span>
+                </div>
+
+                <div class="orders-row">
+                  <span>ETH/USD</span>
+                  <span class="trend down">Sell</span>
+                  <span>Limit</span>
+                  <span>2.5 ETH</span>
+                  <span class="status-pending">Pending</span>
+                </div>
+
+                <div class="orders-row">
+                  <span>SOL/USD</span>
+                  <span class="trend up">Buy</span>
+                  <span>Stop</span>
+                  <span>7.5 SOL</span>
+                  <span class="status-open">Open</span>
+                </div>
+              </div>
+            </section>
+
+            <aside class="panel order-summary-panel">
+              <div class="dashboard-card-head">
+                <span>Order summary</span>
+                <span>Today</span>
+              </div>
+
+              <div class="summary-stack">
+                <div>
+                  <span>Total executed</span>
+                  <strong>$24,680</strong>
+                </div>
+                <div>
+                  <span>Open P/L</span>
+                  <strong class="trend up">+$3,740</strong>
+                </div>
+                <div>
+                  <span>Success rate</span>
+                  <strong>78%</strong>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="NovaCrypto owner payment approvals" />
+    <title>NovaCrypto | Owner approvals</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <div class="admin-brand" aria-label="NovaCrypto admin">
+          <span class="brand-mark">N</span>
+          <span><strong>Nova</strong>Crypto</span>
+        </div>
+        <div class="sidebar-label">Workspace</div>
+        <nav class="admin-nav" aria-label="Admin sections">
+          <a href="#overview" class="active" data-section="overview"><span class="nav-icon">▦</span>Overview</a>
+          <a href="#payments" data-section="payments"><span class="nav-icon">◎</span>Payments</a>
+          <a href="#deposits" data-section="deposits"><span class="nav-icon">↓</span>Deposits</a>
+          <a href="#withdrawals" data-section="withdrawals"><span class="nav-icon">↑</span>Withdrawals</a>
+          <a href="#users" data-section="users"><span class="nav-icon">♙</span>Users</a>
+          <a href="#orders" data-section="orders"><span class="nav-icon">≡</span>Orders</a>
+          <a href="#balances" data-section="balances"><span class="nav-icon">▤</span>Balances</a>
+          <a href="#holdings" data-section="holdings"><span class="nav-icon">◈</span>Holdings</a>
+          <a href="#chat" data-section="chat"><span class="nav-icon">◌</span>Chat</a>
+          <a href="#customerMessages" data-section="customerMessages"><span class="nav-icon">✉</span>Customer messages</a>
+        </nav>
+      </aside>
+
+      <main class="admin-main">
+        <header class="admin-header">
+          <div>
+            <span class="eyebrow">Control center</span>
+            <h1>Operations dashboard</h1>
+          </div>
+          <button type="button" class="btn btn-secondary" id="refreshPayments">↻ Refresh data</button>
+        </header>
+
+        <p class="admin-message" id="adminMessage" role="status"></p>
+
+        <section class="admin-view active-view" id="overview" data-view>
+          <div class="view-heading"><div><span class="eyebrow">Live snapshot</span><h2>Overview</h2></div><span class="live-dot">● Live data</span></div>
+          <div class="stat-grid" id="statGrid"></div>
+          <div class="overview-grid">
+            <section class="admin-panel"><div class="panel-heading"><div><span class="eyebrow">Needs attention</span><h3>Pending activity</h3></div></div><div id="pendingSummary"></div></section>
+            <section class="admin-panel"><div class="panel-heading"><div><span class="eyebrow">Latest record</span><h3>Recent deposits</h3></div></div><div id="recentSummary"></div></section>
+          </div>
+        </section>
+
+        <section class="admin-view" id="payments" data-view><div class="view-heading"><div><span class="eyebrow">Access control</span><h2>Payment approvals</h2></div><span class="count-badge" id="pendingCount">0 pending</span></div><section class="payment-list" id="paymentList" aria-live="polite"></section></section>
+        <section class="admin-view" id="deposits" data-view><div class="view-heading"><div><span class="eyebrow">Account funding</span><h2>Deposit approvals</h2></div></div><section class="payment-list" id="depositList" aria-live="polite"></section></section>
+        <section class="admin-view" id="withdrawals" data-view><div class="view-heading"><div><span class="eyebrow">Payout queue</span><h2>Withdrawals</h2></div></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>User</th><th>Recipient</th><th>Wallet address</th><th>Network</th><th>Amount</th><th>Status</th><th>Submitted</th></tr></thead><tbody id="withdrawalTable"></tbody></table></div></section>
+        <section class="admin-view" id="users" data-view><div class="view-heading"><div><span class="eyebrow">Accounts</span><h2>Registered users</h2></div></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>ID</th><th>Account balance</th></tr></thead><tbody id="userTable"></tbody></table></div></section>
+        <section class="admin-view" id="orders" data-view><div class="view-heading"><div><span class="eyebrow">Trading activity</span><h2>All orders</h2></div></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>User</th><th>Asset</th><th>Side</th><th>Type</th><th>Amount</th><th>Total</th><th>Status</th><th>Created</th></tr></thead><tbody id="orderTable"></tbody></table></div></section>
+        <section class="admin-view" id="balances" data-view><div class="view-heading"><div><span class="eyebrow">Funds ledger</span><h2>Account balances</h2></div></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Email</th><th>Balance</th><th>Approved deposits</th><th>Open orders</th></tr></thead><tbody id="balanceTable"></tbody></table></div></section>
+        <section class="admin-view" id="holdings" data-view><div class="view-heading"><div><span class="eyebrow">Asset ledger</span><h2>Account holdings</h2></div></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>User</th><th>Asset</th><th>Quantity</th><th>Updated</th></tr></thead><tbody id="holdingTable"></tbody></table></div></section>
+        <section class="admin-view" id="chat" data-view><div class="view-heading"><div><span class="eyebrow">Community activity</span><h2>Market chat</h2></div></div><div class="data-table-wrap"><table class="data-table"><thead><tr><th>Author</th><th>User</th><th>Message</th><th>Sent</th></tr></thead><tbody id="chatTable"></tbody></table></div></section>
+        <section class="admin-view" id="customerMessages" data-view>
+          <div class="view-heading"><div><span class="eyebrow">Direct communication</span><h2>Customer messages</h2></div><span class="count-badge">Monday - Saturday</span></div>
+          <section class="admin-panel customer-message-panel">
+            <div class="customer-message-toolbar">
+              <label class="admin-field"><span>Customers</span><select id="customerRecipient" multiple size="5"><option value="">Select a customer</option></select><button type="button" class="btn btn-secondary select-all-customers" id="selectAllCustomers">Select all customers</button></label>
+              <div><span class="admin-field-label">Message day</span><div class="message-days" id="messageDays" role="tablist"></div></div>
+            </div>
+            <div class="customer-message-status" id="customerMessageStatus">Choose a customer and a day to begin.</div>
+            <label class="admin-field"><span>Subject</span><input id="customerMessageSubject" type="text" maxlength="160" placeholder="Message subject" readonly></label>
+            <label class="admin-field"><span>Message</span><textarea id="customerMessageBody" rows="9" maxlength="5000" placeholder="Write the message for this day..." readonly></textarea></label>
+            <div class="customer-message-actions"><button type="button" class="btn btn-primary" id="sendCustomerMessage">Send email</button></div>
+          </section>
+        </section>
+      </main>
+    </div>
+    <script src="admin.js"></script>
+  </body>
+</html>

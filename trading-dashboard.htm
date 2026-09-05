@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NovaCrypto | Trading Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="dashboard">
+    <div class="page-shell">
+      <aside class="trade-sidebar" aria-label="Trading navigation">
+        <a href="index.html" class="trade-sidebar-brand" aria-label="NovaCrypto home">N</a>
+        <nav>
+          <a href="trading-dashboard.htm" class="active-link"><span>Trade</span></a>
+          <a href="market.html"><span>Markets</span></a>
+          <a href="trad.html"><span>Portfolio</span></a>
+          <a href="order.html"><span>Orders</span></a>
+        </nav>
+        <a href="index.html" class="trade-sidebar-exit" aria-label="Exit dashboard">Exit</a>
+      </aside>
+
+      <aside class="trade-utility" aria-label="Trading tools">
+        <a href="#" class="utility-link active" data-tool="trades"><span class="utility-mark">↻</span><span>Trades</span></a>
+        <a href="#" class="utility-link" data-tool="signals"><span class="utility-mark">⌁</span><span>Signals</span></a>
+        <a href="#" class="utility-link" data-tool="social"><span class="utility-mark">◎</span><span>Social</span></a>
+        <a href="#" class="utility-link" data-tool="express"><span class="utility-mark">◇</span><span>Express</span></a>
+        <a href="#" class="utility-link" data-tool="tournaments"><span class="utility-mark">♜</span><span>Tournaments</span></a>
+        <a href="#" class="utility-link" data-tool="pending"><span class="utility-mark">◷</span><span>Pending</span></a>
+        <a href="#" class="utility-link" data-tool="hotkeys"><span class="utility-mark">⌨</span><span>Hotkeys</span></a>
+        <button type="button" class="utility-fullscreen" aria-label="Full screen">⛶</button>
+      </aside>
+
+      <header class="site-header">
+        <div class="container nav-wrap">
+          <a href="index.html" class="brand" aria-label="NovaCrypto home">
+            <span class="brand-mark">N</span>
+            <span>NovaCrypto</span>
+          </a>
+
+          <nav class="main-nav" aria-label="Main navigation">
+            <a href="trading-dashboard.htm" class="active-link">Trade</a>
+            <a href="market.html">Markets</a>
+            <a href="trad.html">Portfolio</a>
+            <a href="order.html">Orders</a>
+          </nav>
+
+          <div class="nav-actions">
+            <button type="button" id="logoutBtn" class="btn btn-ghost">Log out</button>
+          </div>
+        </div>
+      </header>
+
+      <main id="overview" class="trading-dashboard">
+        <div class="container">
+          <div class="terminal-toolbar">
+            <div class="instrument-picker">
+              <span class="coin-dot btc" id="instrumentDot"></span>
+              <div>
+                <select id="instrumentPicker" aria-label="Change trading pair">
+                  <option value="BTC" data-name="Bitcoin" data-dot="btc">BTC / USD</option>
+                  <option value="ETH" data-name="Ethereum" data-dot="eth">ETH / USD</option>
+                  <option value="SOL" data-name="Solana" data-dot="sol">SOL / USD</option>
+                  <option value="ADA" data-name="Cardano" data-dot="ada">ADA / USD</option>
+                  <option value="XRP" data-name="XRP" data-dot="purple">XRP / USD</option>
+                  <option value="DOGE" data-name="Dogecoin" data-dot="gold">DOGE / USD</option>
+                  <option value="BNB" data-name="BNB" data-dot="blue">BNB / USD</option>
+                  <option value="LINK" data-name="Chainlink" data-dot="purple">LINK / USD</option>
+                  <option value="AVAX" data-name="Avalanche" data-dot="orange">AVAX / USD</option>
+                  <option value="NEAR" data-name="NEAR Protocol" data-dot="teal">NEAR / USD</option>
+                  <option value="ARB" data-name="Arbitrum" data-dot="pink">ARB / USD</option>
+                  <option value="TON" data-name="Toncoin" data-dot="green">TON / USD</option>
+                </select>
+                <small id="instrumentName">Bitcoin</small>
+              </div>
+            </div>
+            <div class="terminal-stats">
+              <span>Balance <strong id="accountBalance">$50,000.00</strong></span>
+              <span>24h volume <strong>$28.4B</strong></span>
+              <span class="trend up" id="liveStatus">Live market</span>
+              <button type="button" class="funds-button" data-funds-mode="deposit">Deposit</button>
+              <button type="button" class="funds-button funds-button-secondary" data-funds-mode="withdraw">Withdraw</button>
+            </div>
+          </div>
+
+          <dialog class="funds-modal" id="fundsModal" aria-hidden="true">
+            <div class="funds-backdrop" data-close-funds></div>
+            <section class="funds-panel panel" role="dialog" aria-modal="true" aria-labelledby="fundsTitle">
+              <button type="button" class="modal-close" aria-label="Close funds form" data-close-funds>×</button>
+              <span class="eyebrow">Account funds</span>
+              <h2 id="fundsTitle">Deposit funds</h2>
+              <p class="funds-copy">Add or withdraw money from your trading balance.</p>
+              <div class="funds-tabs">
+                <button type="button" class="funds-tab active" data-funds-tab="deposit">Deposit</button>
+                <button type="button" class="funds-tab" data-funds-tab="withdraw">Withdraw</button>
+              </div>
+              <form id="fundsForm" class="funds-form">
+                <label>
+                  Amount (USD)
+                  <input type="number" name="fundsAmount" min="1" step="0.01" placeholder="Enter amount" required />
+                </label>
+                <div class="funds-method-panel" id="cryptoDetails">
+                  <div class="wallet-qr-wrap">
+                    <img class="wallet-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=bitcoin%3Abc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw" alt="QR code for the NovaCrypto Bitcoin deposit address" />
+                  </div>
+                  <p class="wallet-instruction">Scan this QR code with your crypto wallet.</p>
+                  <div class="wallet-address">
+                    <span>BTC wallet address</span>
+                    <code>bc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw</code>
+                    <button type="button" class="copy-wallet" id="copyWallet">Copy address</button>
+                  </div>
+                  <label>
+                    Network
+                    <select name="walletNetwork">
+                      <option value="bitcoin">Bitcoin (BTC)</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="funds-method-panel hidden" id="withdrawalDetails">
+                  <label>
+                    Full name
+                    <input type="text" name="withdrawalName" autocomplete="name" placeholder="Enter your full name" />
+                  </label>
+                  <label>
+                    Wallet address
+                    <input type="text" name="withdrawalAddress" autocomplete="off" placeholder="Enter your wallet address" />
+                  </label>
+                  <label>
+                    Network
+                    <select name="withdrawalNetwork">
+                      <option value="bitcoin">Bitcoin (BTC)</option>
+                    </select>
+                  </label>
+                </div>
+                <p class="funds-available">Available balance: <strong id="availableBalance">$50,000.00</strong></p>
+                <button type="submit" class="btn btn-primary full" id="fundsSubmit">Deposit funds</button>
+              </form>
+              <p class="funds-message" id="fundsMessage" aria-live="polite"></p>
+            </section>
+          </dialog>
+
+          <div class="trading-main-grid">
+            <section class="panel chart-panel">
+              <button type="button" class="chart-focus-exit" id="chartFocusExit">Exit focus</button>
+              <div class="chart-topbar">
+                <div>
+                  <span class="pair-label">BTC / USD</span>
+                  <h3 id="chartPrice">$67,420.18</h3>
+                </div>
+                <div class="chart-actions">
+                  <button type="button" class="mini-btn active" data-timeframe="1D">1D</button>
+                  <button type="button" class="mini-btn" data-timeframe="1W">1W</button>
+                  <button type="button" class="mini-btn" data-timeframe="1M">1M</button>
+                </div>
+              </div>
+
+              <div class="price-row">
+                <span class="trend up" id="chartChange">+4.2%</span>
+                <span id="chartHigh">High $68,120</span>
+                <span id="chartLow">Low $64,240</span>
+                <span>Vol 24h $28.4B</span>
+              </div>
+
+              <div class="chart-toolbar" aria-label="Chart tools">
+                <button type="button" class="chart-tool active" data-chart-tool="Candles">Candles</button>
+                <button type="button" class="chart-tool" data-chart-tool="Depth">Depth</button>
+                <button type="button" class="chart-tool" data-chart-tool="Indicators">Indicators</button>
+                <span class="chart-tool-divider" aria-hidden="true"></span>
+                <button type="button" class="chart-tool drawing-tool active" data-drawing-tool="cursor" title="Select and move around the chart">↖ Cursor</button>
+                <button type="button" class="chart-tool drawing-tool" data-drawing-tool="line" title="Draw a trend line">╱ Trend line</button>
+                <button type="button" class="chart-tool drawing-tool" data-drawing-tool="horizontal" title="Draw a horizontal price level">― Price level</button>
+                <button type="button" class="chart-tool drawing-tool" data-drawing-tool="rectangle" title="Draw a price zone">□ Zone</button>
+                <button type="button" class="chart-tool drawing-action" data-drawing-action="undo" title="Undo the last drawing">↶ Undo</button>
+                <button type="button" class="chart-tool drawing-action" data-drawing-action="clear" title="Clear drawings">⌫ Clear</button>
+                <span class="chart-tool chart-tool-status">● Live market</span>
+              </div>
+
+              <div class="chart-wrap">
+                <svg class="chart-svg" viewBox="0 0 3200 300" aria-label="BTC chart">
+                <defs>
+                  <linearGradient id="chartFillMain" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#55d6bc" stop-opacity="0.42"></stop>
+                    <stop offset="100%" stop-color="#55d6bc" stop-opacity="0"></stop>
+                  </linearGradient>
+                </defs>
+                <g class="chart-grid-lines">
+                  <line x1="0" y1="30" x2="3200" y2="30"></line>
+                  <line x1="0" y1="90" x2="3200" y2="90"></line>
+                  <line x1="0" y1="150" x2="3200" y2="150"></line>
+                  <line x1="0" y1="210" x2="3200" y2="210"></line>
+                  <line x1="0" y1="270" x2="3200" y2="270"></line>
+                </g>
+                <g id="historicalCandles" class="candles" aria-hidden="true"></g>
+                <g class="trade-levels" aria-hidden="true">
+                  <rect class="support-zone" x="0" y="224" width="760" height="34"></rect>
+                  <line class="level level-red level-strong" x1="0" y1="42" x2="3200" y2="42"></line>
+                  <text x="3170" y="36">Resistance</text>
+                  <line class="level level-red" x1="0" y1="130" x2="3200" y2="130"></line>
+                  <text x="3170" y="124">Sell zone</text>
+                  <line class="level level-dashed" x1="0" y1="176" x2="3200" y2="176"></line>
+                  <text x="3170" y="170">Previous close</text>
+                  <line class="level level-green" x1="0" y1="214" x2="3200" y2="214"></line>
+                  <text x="3170" y="208">Support</text>
+                  <line class="level level-purple" x1="0" y1="260" x2="3200" y2="260"></line>
+                  <text x="3170" y="254">Pivot</text>
+                  <rect class="control-zone" x="1510" y="153" width="142" height="22"></rect>
+                  <text x="2850" y="168">Entry zone</text>
+                  <line class="current-price-line" x1="0" y1="92" x2="3200" y2="92"></line>
+                  <rect class="current-price-label" x="3148" y="82" width="52" height="18"></rect>
+                  <text class="current-price-text" x="3194" y="95">Live</text>
+                </g>
+                <g class="candles legacy-candles" aria-hidden="true">
+                  <line x1="52" y1="188" x2="52" y2="238"></line><rect x="44" y="201" width="16" height="24"></rect>
+                  <line x1="104" y1="166" x2="104" y2="218"></line><rect x="96" y="178" width="16" height="25"></rect>
+                  <line x1="156" y1="142" x2="156" y2="194"></line><rect x="148" y="153" width="16" height="27"></rect>
+                  <line x1="208" y1="151" x2="208" y2="207"></line><rect class="down" x="200" y="163" width="16" height="27"></rect>
+                  <line x1="260" y1="119" x2="260" y2="177"></line><rect x="252" y="132" width="16" height="29"></rect>
+                  <line x1="312" y1="91" x2="312" y2="151"></line><rect x="304" y="103" width="16" height="31"></rect>
+                  <line x1="364" y1="104" x2="364" y2="161"></line><rect class="down" x="356" y="116" width="16" height="28"></rect>
+                  <line x1="416" y1="72" x2="416" y2="132"></line><rect x="408" y="84" width="16" height="30"></rect>
+                  <line x1="468" y1="102" x2="468" y2="158"></line><rect class="down" x="460" y="113" width="16" height="28"></rect>
+                  <line x1="520" y1="81" x2="520" y2="140"></line><rect x="512" y="92" width="16" height="31"></rect>
+                  <line x1="572" y1="53" x2="572" y2="112"></line><rect x="564" y="65" width="16" height="30"></rect>
+                  <line x1="624" y1="64" x2="624" y2="119"></line><rect class="down" x="616" y="76" width="16" height="28"></rect>
+                  <line x1="676" y1="43" x2="676" y2="99"></line><rect x="668" y="53" width="16" height="29"></rect>
+                  <line x1="728" y1="29" x2="728" y2="89"></line><rect class="down" x="720" y="42" width="16" height="30"></rect>
+                </g>
+                <path
+                  class="chart-moving-average"
+                  d="M0,232 C65,224 95,202 145,208 S220,239 276,207 S355,184 414,202 S490,172 548,178 S650,158 760,170"
+                  fill="none"
+                ></path>
+                <path
+                  id="chartArea"
+                  d="M0,205 C80,190, 115,150, 190,170 S300,90 370,125 S470,55 540,105 S660,45 760,80 L760,300 L0,300 Z"
+                  fill="url(#chartFillMain)"
+                ></path>
+                <path
+                  class="chart-line-overlay"
+                  id="chartLine"
+                  d="M0,205 C80,190, 115,150, 190,170 S300,90 370,125 S470,55 540,105 S660,45 760,80"
+                  fill="none"
+                  stroke="#a8e063"
+                  stroke-width="4.5"
+                  stroke-linecap="round"
+                ></path>
+                <path id="livePriceTrace" class="live-price-trace" d="M0,205"></path>
+                <circle class="chart-dot" cx="3160" cy="80" r="6"></circle>
+                <line class="chart-crosshair" x1="3160" y1="80" x2="3160" y2="300"></line>
+                <g class="chart-axis-labels">
+                  <text x="30" y="294">00:00</text>
+                  <text x="410" y="294">03:00</text>
+                  <text x="800" y="294">06:00</text>
+                  <text x="1190" y="294">09:00</text>
+                  <text x="1580" y="294">12:00</text>
+                  <text x="1970" y="294">15:00</text>
+                  <text x="2360" y="294">18:00</text>
+                  <text x="2750" y="294">21:00</text>
+                  <text x="3140" y="294">Now</text>
+                  <text x="3118" y="35">$1B</text>
+                  <text x="3118" y="95">$750M</text>
+                  <text x="3118" y="155">$500M</text>
+                  <text x="3118" y="215">$250M</text>
+                  <text x="3118" y="275">$0</text>
+                </g>
+                <g id="drawingLayer" class="drawing-layer" aria-label="User chart drawings"></g>
+                </svg>
+              </div>
+              <div class="chart-scroll-controls" aria-label="Chart timeline navigation">
+                <button type="button" class="chart-scroll-button" data-chart-scroll="left" aria-label="Scroll chart left">‹</button>
+                <div class="chart-scroll-track"><span>Earlier</span><span>Drag or scroll through chart history</span><span>Now</span></div>
+                <button type="button" class="chart-scroll-button" data-chart-scroll="right" aria-label="Scroll chart right">›</button>
+              </div>
+
+              <div class="volume-panel" aria-label="Trading volume">
+                <div class="volume-header"><span>Volume</span><span>24h</span></div>
+                <div class="volume-bars" aria-hidden="true">
+                  <span style="height: 28%"></span><span style="height: 42%"></span><span class="down" style="height: 34%"></span><span style="height: 58%"></span><span style="height: 46%"></span><span style="height: 72%"></span><span class="down" style="height: 55%"></span><span style="height: 66%"></span><span style="height: 38%"></span><span style="height: 82%"></span><span style="height: 50%"></span><span class="down" style="height: 62%"></span><span style="height: 76%"></span><span style="height: 44%"></span><span style="height: 68%"></span><span class="down" style="height: 37%"></span><span style="height: 60%"></span><span style="height: 88%"></span><span style="height: 52%"></span><span class="down" style="height: 70%"></span><span style="height: 48%"></span><span style="height: 78%"></span><span style="height: 57%"></span><span class="down" style="height: 42%"></span>
+                </div>
+              </div>
+
+              <div class="indicator-panel">
+                <div class="indicator-header">
+                  <span>RSI 14</span>
+                  <span>70&nbsp;&nbsp;&nbsp;50&nbsp;&nbsp;&nbsp;30</span>
+                </div>
+                <svg class="rsi-svg" viewBox="0 0 1900 92" aria-label="Relative strength index chart">
+                  <line x1="0" y1="18" x2="1900" y2="18"></line>
+                  <line x1="0" y1="46" x2="1900" y2="46"></line>
+                  <line x1="0" y1="74" x2="1900" y2="74"></line>
+                  <path d="M0,58 C35,46 52,69 80,54 S120,38 150,55 S190,78 220,59 S260,45 294,61 S334,71 365,52 S410,40 442,55 S480,68 515,50 S555,47 588,57 S625,69 660,53 S710,44 760,48" fill="none"></path>
+                </svg>
+              </div>
+            </section>
+
+            <section class="panel order-book-panel" aria-label="Order book">
+              <div class="exchange-panel-head">
+                <div class="exchange-tabs">
+                  <button type="button" class="exchange-tab active">Order Book</button>
+                  <button type="button" class="exchange-tab">Recent Trades</button>
+                </div>
+                <button type="button" class="panel-menu" aria-label="Order book options">⋮</button>
+              </div>
+              <div class="book-legend"><span>Price (USD)</span><span>Qty (BTC)</span><span>Total (BTC)</span></div>
+              <div class="book-rows book-asks" aria-label="Sell orders">
+                <div><span>80,960.7</span><span>0.059367</span><span>1.097569</span></div>
+                <div><span>80,960.4</span><span>0.002129</span><span>1.038202</span></div>
+                <div><span>80,959.1</span><span>0.001774</span><span>1.036073</span></div>
+                <div><span>80,958.4</span><span>0.046097</span><span>1.034299</span></div>
+                <div><span>80,958.3</span><span>0.025901</span><span>0.988202</span></div>
+                <div><span>80,957.9</span><span>0.000095</span><span>0.962301</span></div>
+              </div>
+              <div class="book-mid-price"><strong id="bookPrice">$80,957.7</strong><span>≈ $80,957.70 USD</span></div>
+              <div class="book-rows book-bids" aria-label="Buy orders">
+                <div><span>80,957.7</span><span>0.849939</span><span>0.849939</span></div>
+                <div><span>80,957.5</span><span>0.000873</span><span>0.850812</span></div>
+                <div><span>80,957.2</span><span>0.001000</span><span>0.851812</span></div>
+                <div><span>80,956.4</span><span>2.059349</span><span>2.911161</span></div>
+                <div><span>80,956.3</span><span>0.002000</span><span>2.913161</span></div>
+                <div><span>80,955.8</span><span>0.179509</span><span>3.092670</span></div>
+              </div>
+              <div class="book-depth"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            </section>
+
+            <aside class="panel side-panel">
+              <div class="ticket-header">
+                <div>
+                  <span class="eyebrow">Order ticket</span>
+                  <h3>BTC / USD</h3>
+                </div>
+                <span class="ticket-status">Live</span>
+              </div>
+
+              <form id="tradeForm" class="trade-form">
+                <div class="trade-toggle">
+                  <button type="button" class="trade-type active">Buy</button>
+                  <button type="button" class="trade-type">Sell</button>
+                </div>
+
+                <label>
+                  Asset
+                  <select name="asset">
+                    <option>BTC</option>
+                    <option>ETH</option>
+                    <option>SOL</option>
+                    <option>ADA</option>
+                    <option>XRP</option>
+                    <option>DOGE</option>
+                    <option>BNB</option>
+                    <option>LINK</option>
+                    <option>AVAX</option>
+                    <option>NEAR</option>
+                    <option>ARB</option>
+                    <option>TON</option>
+                  </select>
+                </label>
+
+                <label>
+                  Order type
+                  <select name="type">
+                    <option>Market</option>
+                    <option>Limit</option>
+                    <option>Stop</option>
+                  </select>
+                </label>
+
+                <label>
+                  Amount
+                  <input type="number" name="amount" min="0" step="0.01" value="0.25" />
+                </label>
+
+                <div class="order-summary">
+                  <span>Estimated total</span>
+                  <strong id="estimatedTotal">$16,855.05</strong>
+                </div>
+
+                <button type="submit" class="btn btn-primary full">Place buy order</button>
+              </form>
+            </aside>
+          </div>
+
+          <div class="bottom-grid">
+            <section class="panel activity-panel" id="portfolio">
+              <div class="exchange-bottom-tabs">
+                <button type="button" class="active">Open Orders (0)</button>
+                <button type="button">Positions (0)</button>
+                <button type="button">Order History</button>
+                <button type="button">Trade History</button>
+                <button type="button">Assets</button>
+                <button type="button">P&amp;L</button>
+              </div>
+
+              <div class="positions-table" id="positionsTable">
+                <div class="positions-row positions-head">
+                  <span>Pair</span>
+                  <span>Side</span>
+                  <span>Entry</span>
+                  <span>Current</span>
+                  <span>P/L</span>
+                </div>
+              </div>
+            </section>
+
+            <aside class="panel chat-panel">
+              <div class="dashboard-card-head">
+                <span>Market chat</span>
+                <span>Live</span>
+              </div>
+
+              <div class="chat-feed" id="chatFeed">
+                <div class="chat-message incoming">
+                  <strong>Alex</strong>
+                  <p>BTC looks strong above $66K. Momentum still healthy.</p>
+                </div>
+                <div class="chat-message outgoing">
+                  <strong>You</strong>
+                  <p>Watching ETH breakout. Might add on pullback.</p>
+                </div>
+                <div class="chat-message incoming">
+                  <strong>Maria</strong>
+                  <p>Altcoin rotation is picking up. Keep an eye on SOL.</p>
+                </div>
+              </div>
+
+              <form class="chat-input-row" id="chatForm">
+                <input id="chatInput" type="text" placeholder="Message the market..." maxlength="500" autocomplete="off" />
+                <button type="submit" class="btn btn-primary">Send</button>
+              </form>
+            </aside>
+          </div>
+        </div>
+      </main>
+      <div class="terminal-toast" id="terminalToast" role="status" aria-live="polite"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

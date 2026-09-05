@@ -223,6 +223,7 @@ function supabaseOrder(order) {
   };
 }
 
+server.use(express.static(__dirname, { index: 'index.html' }));
 server.use(middlewares);
 server.use(jsonServer.bodyParser);
 server.use((req, res, next) => {
@@ -825,7 +826,6 @@ server.get('/api/admin/data', async (req, res) => {
   }
 });
 
-server.use(express.static(__dirname, { index: 'index.html' }));
 server.use(router);
 server.listen(port, () => {
   console.log(`JSON Server is running on http://localhost:${port}`);

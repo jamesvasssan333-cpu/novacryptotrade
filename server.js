@@ -37,6 +37,7 @@ server.get('/', (req, res) => {
 });
 
 const pageRoutes = {
+  '/app': 'app.html',
   '/admin': 'admin.html',
   '/market': 'market.html',
   '/order': 'order.html',

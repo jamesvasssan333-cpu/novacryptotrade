@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#071511" />
+    <meta name="description" content="NovaCrypto mobile trading app" />
+    <title>NovaCrypto Mobile</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <main class="mobile-app" id="app">
+      <header class="app-header">
+        <a class="app-brand" href="/app" aria-label="NovaCrypto mobile home"><span class="brand-mark">N</span><span>NovaCrypto</span></a>
+        <button class="icon-button" id="logoutButton" type="button" aria-label="Log out" hidden>↗</button>
+      </header>
+
+      <section class="guest-card" id="guestCard" hidden>
+        <span class="eyebrow">Your mobile market desk</span>
+        <h1>Trade with a clearer view.</h1>
+        <p>Sign in to see your portfolio, live markets, and trading balance in one focused space.</p>
+        <button class="primary-button" id="guestLogin" type="button">Open account</button>
+        <form class="auth-panel" id="authForm" hidden>
+          <div class="segmented auth-switch"><button class="active" data-auth-mode="login" type="button">Sign in</button><button data-auth-mode="signup" type="button">Create account</button></div>
+          <label class="auth-name-field" hidden>Full name<input id="authName" type="text" autocomplete="name" placeholder="Your name" /></label>
+          <label>Email<input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required /></label>
+          <label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" required /></label>
+          <button class="primary-button" id="authSubmit" type="submit">Sign in</button>
+          <p class="form-message" id="authMessage" role="status"></p>
+        </form>
+      </section>
+
+      <section class="app-content" id="appContent">
+        <section class="view active" data-view="home">
+          <div class="welcome-row"><div><span class="eyebrow">Good to see you</span><h1 id="userName">Trader</h1></div><span class="status-dot">Live</span></div>
+          <article class="balance-card">
+            <div class="balance-top"><span>Total balance</span><button class="ghost-button" id="refreshButton" type="button">Refresh</button></div>
+            <strong id="balanceValue">$0.00</strong>
+            <div class="balance-meta"><span>Available to trade</span><strong id="availableValue">$0.00</strong></div>
+          </article>
+          <div class="section-heading"><h2>Market pulse</h2><button class="text-button" data-go="markets" type="button">See all</button></div>
+          <div class="market-strip" id="homeMarkets"></div>
+          <div class="section-heading"><h2>Quick actions</h2></div>
+          <div class="quick-grid"><button class="quick-card" data-go="trade" type="button"><span>↗</span><strong>Trade</strong><small>Buy or sell assets</small></button><button class="quick-card" data-go="portfolio" type="button"><span>◈</span><strong>Portfolio</strong><small>Review your holdings</small></button></div>
+        </section>
+
+        <section class="view" data-view="markets">
+          <div class="view-heading"><div><span class="eyebrow">Live prices</span><h1>Markets</h1></div><span class="status-dot">Live</span></div>
+          <label class="search-box"><span>⌕</span><input id="marketSearch" type="search" placeholder="Search assets" /></label>
+          <div class="market-list" id="marketList"></div>
+        </section>
+
+        <section class="view" data-view="trade">
+          <div class="view-heading"><div><span class="eyebrow">Place an order</span><h1>Trade</h1></div></div>
+          <div class="trade-pair"><span class="coin-dot btc" id="tradeDot">B</span><div><strong id="tradePair">BTC / USD</strong><small id="tradePrice">Loading price...</small></div><select id="assetSelect" aria-label="Trading asset"><option>BTC</option><option>ETH</option><option>SOL</option><option>ADA</option><option>XRP</option><option>DOGE</option><option>BNB</option><option>LINK</option></select></div>
+          <div class="segmented"><button class="active" data-side="buy" type="button">Buy</button><button data-side="sell" type="button">Sell</button></div>
+          <form class="trade-form" id="tradeForm"><label>Amount (USD)<input id="tradeAmount" type="number" min="1" step="0.01" placeholder="0.00" required /></label><div class="trade-total"><span>Estimated total</span><strong id="tradeTotal">$0.00</strong></div><button class="primary-button" type="submit">Place order</button><p class="form-message" id="tradeMessage" role="status"></p></form>
+        </section>
+
+        <section class="view" data-view="portfolio">
+          <div class="view-heading"><div><span class="eyebrow">Your assets</span><h1>Portfolio</h1></div></div>
+          <article class="portfolio-total"><span>Portfolio value</span><strong id="portfolioValue">$0.00</strong><small id="portfolioUpdated">Waiting for data</small></article>
+          <div class="holding-list" id="holdingList"></div>
+        </section>
+      </section>
+
+      <nav class="bottom-nav" aria-label="Mobile app navigation"><button class="active" data-go="home" type="button"><span>⌂</span>Home</button><button data-go="markets" type="button"><span>◌</span>Markets</button><button data-go="trade" type="button"><span class="trade-nav-icon">+</span>Trade</button><button data-go="portfolio" type="button"><span>◈</span>Portfolio</button></nav>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

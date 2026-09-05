@@ -118,7 +118,9 @@ async function apiRequest(endpoint, options = {}) {
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
+    const error = new Error(`API request failed: ${response.status}`);
+    error.status = response.status;
+    throw error;
   }
 
   if (response.status === 204) {
@@ -426,12 +428,13 @@ async function saveUsers(users) {
 
   try {
     const newestUser = users[users.length - 1];
-    return apiRequest('/users', {
+    return await apiRequest('/users', {
       method: 'POST',
       body: JSON.stringify(newestUser)
     });
   } catch (error) {
     console.warn('Could not sync users to server:', error);
+    return { error };
   }
 }
 
@@ -735,6 +738,12 @@ async function registerUser(name, email, password) {
   const newUser = { name, email, password };
   users.push(newUser);
   const result = await saveUsers(users);
+
+  if (result?.error?.status === 409) {
+    await getUsers();
+    showMessage('An account with this email already exists.', 'error');
+    return;
+  }
 
   localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({ name, email }));
   openPayment('Pro', '$29');

@@ -25,6 +25,7 @@ const router = jsonServer.router(databasePath);
 const middlewares = jsonServer.defaults();
 const port = Number(process.env.PORT) || 3001;
 const MINIMUM_WITHDRAWAL_DEPOSIT = 500;
+const MINIMUM_WITHDRAWAL_TRADES = 10;
 const WELCOME_BONUS = 50000;
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://zewtrvkaunkkkzyfxghr.supabase.co';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -506,6 +507,11 @@ server.post('/api/funds', (req, res) => {
     return sendJson(res, 400, { error: 'You must have at least $500 in approved deposits before withdrawing funds.' });
   }
 
+  const tradeCount = (router.db.get('orders').value() || []).filter((order) => order.userEmail === email && order.status !== 'rejected').length;
+  if (mode === 'withdraw' && tradeCount < MINIMUM_WITHDRAWAL_TRADES) {
+    return sendJson(res, 400, { error: `You must complete at least ${MINIMUM_WITHDRAWAL_TRADES} trades before withdrawing funds.` });
+  }
+
   if (mode === 'withdraw' && amount > balance) {
     return sendJson(res, 400, { error: 'Withdrawal amount cannot exceed the available balance.' });
   }
@@ -629,7 +635,14 @@ server.post('/users', async (req, res) => {
     router.db.set('balances', balances).write();
   }
 
-  return sendJson(res, 201, { ...user, welcomeEmailSent: false });
+  const welcomeEmailSent = await sendBrevoEmail({
+    to: email,
+    name: user.name,
+    subject: 'Welcome to NovaCrypto',
+    textContent: `Hi ${user.name},\n\nYour NovaCrypto account is ready. Complete your payment and wait for owner approval before trading.\n\nNovaCrypto`,
+    htmlContent: `<p>Hi ${escapeHtml(user.name)},</p><p>Your NovaCrypto account is ready. Complete your payment and wait for owner approval before trading.</p><p>NovaCrypto</p>`
+  });
+  return sendJson(res, 201, { ...user, welcomeEmailSent });
 });
 
 server.get('/api/admin/customers', (req, res) => {

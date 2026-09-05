@@ -29,12 +29,25 @@ const authEmail = document.getElementById('authEmail');
 const authPassword = document.getElementById('authPassword');
 const authSubmit = document.getElementById('authSubmit');
 const authMessage = document.getElementById('authMessage');
+const paymentPanel = document.getElementById('paymentPanel');
+const paymentMessage = document.getElementById('paymentMessage');
+const receiptForm = document.getElementById('receiptForm');
+const paymentReceipt = document.getElementById('paymentReceipt');
+const appFundsForm = document.getElementById('appFundsForm');
+const fundsAmount = document.getElementById('fundsAmount');
+const fundsMessage = document.getElementById('fundsMessage');
+const fundsSubmit = document.getElementById('fundsSubmit');
+const withdrawFields = document.getElementById('withdrawFields');
+const withdrawName = document.getElementById('withdrawName');
+const withdrawAddress = document.getElementById('withdrawAddress');
+const depositWallet = document.getElementById('depositWallet');
 let markets = [];
 let tradeSide = 'buy';
 let authMode = 'login';
 let chartRange = '1D';
 let chartPrices = [];
 let chartType = 'candles';
+let fundsMode = 'deposit';
 
 function currentUser() {
   try { return JSON.parse(localStorage.getItem(currentUserKey) || 'null'); } catch { return null; }
@@ -51,6 +64,7 @@ function price(value) { return `$${Number(value || 0).toLocaleString('en-US', { 
 function userEmail() { return encodeURIComponent(currentUser()?.email || ''); }
 
 function setAuthMessage(message, type = '') { authMessage.textContent = message; authMessage.className = `form-message ${type}`; }
+function setPaymentMessage(message, type = '') { paymentMessage.textContent = message; paymentMessage.className = `form-message ${type}`; }
 function setAuthMode(mode) {
   authMode = mode;
   document.querySelectorAll('[data-auth-mode]').forEach((button) => button.classList.toggle('active', button.dataset.authMode === mode));
@@ -80,8 +94,6 @@ async function authenticate(event) {
     }
     authForm.reset();
     authForm.hidden = true;
-    guestCard.hidden = true;
-    appContent.hidden = false;
     await loadAccount();
   } catch (error) {
     setAuthMessage(error.message.includes('409') ? 'An account with this email already exists.' : 'Could not connect to the account service.', 'error');
@@ -144,9 +156,17 @@ function updateTrade() {
 async function loadMarkets() { try { markets = await apiRequest('/api/markets'); renderMarkets(markets); updateTrade(); } catch { tradePrice.textContent = 'Market unavailable'; } }
 async function loadAccount() {
   const user = currentUser();
-  if (!user) { appContent.hidden = true; guestCard.hidden = false; return; }
+  if (!user) { appContent.hidden = true; guestCard.hidden = false; paymentPanel.hidden = true; return; }
   userName.textContent = user.name?.split(' ')[0] || 'Trader'; logoutButton.hidden = false;
   try {
+    const payments = await apiRequest('/payments');
+    const payment = payments[user.email.toLowerCase()];
+    if (payment?.status !== 'approved') {
+      appContent.hidden = true; guestCard.hidden = false; authForm.hidden = true; document.getElementById('guestLogin').hidden = true; paymentPanel.hidden = false;
+      setPaymentMessage(payment?.status === 'pending' ? 'Receipt received. Your account is waiting for owner approval.' : 'Complete payment and upload your receipt to unlock trading.', payment?.status === 'pending' ? 'success' : '');
+      return;
+    }
+    guestCard.hidden = true; paymentPanel.hidden = true; appContent.hidden = false;
     const [balance, portfolio] = await Promise.all([apiRequest(`/api/balance/${userEmail()}`), apiRequest(`/api/portfolio/${userEmail()}`)]);
     balanceValue.textContent = money(balance.balance); availableValue.textContent = money(balance.balance); portfolioValue.textContent = money(portfolio.totalValue); portfolioUpdated.textContent = portfolio.updatedAt ? `Updated ${new Date(portfolio.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'No holdings yet';
     const assets = portfolio.assets || [];
@@ -181,8 +201,41 @@ chartScroll?.addEventListener('pointerup', () => { chartDragging = false; });
 chartScroll?.addEventListener('pointercancel', () => { chartDragging = false; });
 window.addEventListener('resize', drawMobileChart);
 document.querySelectorAll('[data-side]').forEach((button) => button.addEventListener('click', () => { tradeSide = button.dataset.side; document.querySelectorAll('[data-side]').forEach((item) => item.classList.toggle('active', item === button)); updateTrade(); }));
+document.querySelectorAll('[data-funds-mode]').forEach((button) => button.addEventListener('click', () => { fundsMode = button.dataset.fundsMode; document.querySelectorAll('[data-funds-mode]').forEach((item) => item.classList.toggle('active', item === button)); withdrawFields.hidden = fundsMode !== 'withdraw'; depositWallet.hidden = fundsMode !== 'deposit'; fundsSubmit.textContent = fundsMode === 'withdraw' ? 'Request withdrawal' : 'I have sent my deposit'; fundsMessage.textContent = ''; }));
+document.getElementById('depositWalletCopy')?.addEventListener('click', async () => { await navigator.clipboard.writeText('bc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw'); fundsMessage.textContent = 'Deposit wallet address copied.'; });
 logoutButton?.addEventListener('click', () => { localStorage.removeItem(currentUserKey); window.location.reload(); });
 document.getElementById('guestLogin')?.addEventListener('click', () => { authForm.hidden = false; document.getElementById('guestLogin').hidden = true; authEmail.focus(); });
+document.getElementById('copyWallet')?.addEventListener('click', async () => { await navigator.clipboard.writeText('bc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw'); setPaymentMessage('Wallet address copied.', 'success'); });
+document.getElementById('showReceipt')?.addEventListener('click', () => { receiptForm.hidden = false; paymentReceipt.focus(); });
+document.getElementById('switchAccount')?.addEventListener('click', () => { localStorage.removeItem(currentUserKey); window.location.reload(); });
+receiptForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const user = currentUser(); const receipt = paymentReceipt.files[0];
+  if (!user || !receipt) return;
+  if (receipt.size > 5 * 1024 * 1024) { setPaymentMessage('Receipt must be smaller than 5 MB.', 'error'); return; }
+  const receiptData = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.addEventListener('load', () => resolve(reader.result)); reader.addEventListener('error', reject); reader.readAsDataURL(receipt); });
+  try {
+    const payments = await apiRequest('/payments');
+    payments[user.email.toLowerCase()] = { plan: 'Pro', price: '0.00050000 BTC', paymentMethod: 'crypto', walletAddress: 'bc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw', walletNetwork: 'Bitcoin (BTC)', cryptoAmount: 0.0005, receiptName: receipt.name, receiptType: receipt.type || 'application/octet-stream', receiptData, status: 'pending', submittedAt: new Date().toISOString(), paymentNote: '' };
+    await apiRequest('/payments', { method: 'PUT', body: JSON.stringify(payments) });
+    receiptForm.reset(); setPaymentMessage('Receipt sent. Trading will unlock after owner approval.', 'success');
+  } catch { setPaymentMessage('Could not send receipt. Check your connection and try again.', 'error'); }
+});
+appFundsForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const user = currentUser();
+  const amount = Number(fundsAmount.value);
+  if (!user || !amount || amount <= 0) { fundsMessage.textContent = 'Enter a valid amount.'; return; }
+  if (fundsMode === 'withdraw' && (!withdrawName.value.trim() || !withdrawAddress.value.trim())) { fundsMessage.textContent = 'Enter your name and wallet address.'; return; }
+  fundsMessage.textContent = 'Sending request...';
+  try {
+    await apiRequest('/api/funds', { method: 'POST', body: JSON.stringify({ email: user.email, amount, mode: fundsMode, method: 'crypto', walletNetwork: 'bitcoin', withdrawalName: withdrawName.value.trim(), withdrawalAddress: withdrawAddress.value.trim(), withdrawalNetwork: 'bitcoin' }) });
+    fundsMessage.textContent = fundsMode === 'withdraw' ? 'Withdrawal request sent for owner review.' : 'Deposit request sent. It will be added after approval.';
+    appFundsForm.reset();
+  } catch (error) {
+    fundsMessage.textContent = error.message.includes('400') ? (fundsMode === 'withdraw' ? 'Withdrawal locked: you need $500 approved deposits and 10 trades.' : 'Deposit request could not be sent.') : 'Could not connect to the funds service.';
+  }
+});
 document.querySelectorAll('[data-auth-mode]').forEach((button) => button.addEventListener('click', () => setAuthMode(button.dataset.authMode)));
 authForm?.addEventListener('submit', authenticate);
 document.getElementById('refreshButton')?.addEventListener('click', () => Promise.all([loadMarkets(), loadAccount()]));

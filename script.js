@@ -16,7 +16,9 @@ const tabButtons = document.querySelectorAll('.tab-btn');
 const TRUST_WALLET_ADDRESS = 'bc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw';
 const TRUST_WALLET_NETWORK = 'Bitcoin (BTC)';
 const PAYMENT_BTC_AMOUNT = 0.0005;
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3001'
+  : 'https://novacryptotrade.onrender.com';
 const authTriggers = document.querySelectorAll('.auth-trigger');
 const paymentTriggers = document.querySelectorAll('.payment-trigger');
 const tradeForm = document.getElementById('tradeForm');

@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3001'
+  : 'https://novacryptotrade.onrender.com';
 const paymentList = document.getElementById('paymentList');
 const depositList = document.getElementById('depositList');
 const pendingCount = document.getElementById('pendingCount');

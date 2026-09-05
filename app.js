@@ -108,7 +108,7 @@ function showView(name) {
 
 function renderMarkets(items) {
   const filtered = items.filter((item) => `${item.symbol} ${item.name}`.toLowerCase().includes((marketSearch?.value || '').toLowerCase()));
-  const row = (item) => `<div class="market-row" data-symbol="${item.symbol}"><span class="coin-dot ${item.symbol.toLowerCase()}">${item.symbol[0]}</span><div><strong>${item.symbol} / USD</strong><small>${item.name}</small></div><div class="row-price"><strong>${price(item.price)}</strong><small class="${Number(item.change24h) >= 0 ? 'up' : 'down'}">${Number(item.change24h || 0) >= 0 ? '+' : ''}${Number(item.change24h || 0).toFixed(2)}%</small></div></div>`;
+  const row = (item) => `<button class="market-row" data-symbol="${item.symbol}" type="button"><span class="coin-dot ${item.symbol.toLowerCase()}">${item.symbol[0]}</span><div><strong>${item.symbol} / USD</strong><small>${item.name}</small></div><div class="row-price"><strong>${price(item.price)}</strong><small class="${Number(item.change24h) >= 0 ? 'up' : 'down'}">${Number(item.change24h || 0) >= 0 ? '+' : ''}${Number(item.change24h || 0).toFixed(2)}%</small></div><span class="market-arrow" aria-hidden="true">›</span></button>`;
   if (marketList) marketList.innerHTML = filtered.map(row).join('') || '<p class="form-message">No assets found.</p>';
   if (homeMarkets) homeMarkets.innerHTML = items.slice(0, 3).map((item) => `<button class="market-chip" data-symbol="${item.symbol}" type="button"><strong>${item.symbol}</strong><small>${price(item.price)}</small><small class="${Number(item.change24h) >= 0 ? 'up' : 'down'}">${Number(item.change24h || 0) >= 0 ? '+' : ''}${Number(item.change24h || 0).toFixed(2)}%</small></button>`).join('');
 }

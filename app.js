@@ -15,6 +15,13 @@ const assetSelect = document.getElementById('assetSelect');
 const tradePrice = document.getElementById('tradePrice');
 const tradeAmount = document.getElementById('tradeAmount');
 const tradeTotal = document.getElementById('tradeTotal');
+const tradeLimitPrice = document.getElementById('tradeLimitPrice');
+const tradeProfit = document.getElementById('tradeProfit');
+const tradeAvailable = document.getElementById('tradeAvailable');
+const amountUnit = document.getElementById('amountUnit');
+const mobileChart = document.getElementById('mobileChart');
+const chartValue = document.getElementById('chartValue');
+const chartScroll = document.getElementById('chartScroll');
 const tradeMessage = document.getElementById('tradeMessage');
 const authForm = document.getElementById('authForm');
 const authName = document.getElementById('authName');
@@ -25,6 +32,9 @@ const authMessage = document.getElementById('authMessage');
 let markets = [];
 let tradeSide = 'buy';
 let authMode = 'login';
+let chartRange = '1D';
+let chartPrices = [];
+let chartType = 'candles';
 
 function currentUser() {
   try { return JSON.parse(localStorage.getItem(currentUserKey) || 'null'); } catch { return null; }
@@ -92,7 +102,44 @@ function renderMarkets(items) {
 }
 
 function selectedMarket() { return markets.find((item) => item.symbol === assetSelect?.value) || markets[0] || { symbol: 'BTC', price: 0 }; }
-function updateTrade() { const market = selectedMarket(); document.getElementById('tradePair').textContent = `${market.symbol} / USD`; tradePrice.textContent = price(market.price); tradeTotal.textContent = money(tradeAmount.value || 0); }
+function drawMobileChart() {
+  if (!mobileChart) return;
+  const context = mobileChart.getContext('2d');
+  const width = mobileChart.clientWidth * window.devicePixelRatio;
+  const height = mobileChart.clientHeight * window.devicePixelRatio;
+  mobileChart.width = width; mobileChart.height = height; context.scale(window.devicePixelRatio, window.devicePixelRatio);
+  const w = mobileChart.clientWidth; const h = mobileChart.clientHeight; const chartHeight = h * .78; const left = 8; const right = 42;
+  context.clearRect(0, 0, w, h); context.fillStyle = '#050b09'; context.fillRect(0, 0, w, h);
+  context.strokeStyle = 'rgba(142,230,200,.08)'; context.lineWidth = 1;
+  for (let index = 1; index < 5; index += 1) { const y = chartHeight * index / 5; context.beginPath(); context.moveTo(left, y); context.lineTo(w - right, y); context.stroke(); }
+  for (let index = 1; index < 7; index += 1) { const x = left + (w - left - right) * index / 7; context.beginPath(); context.moveTo(x, 0); context.lineTo(x, chartHeight); context.stroke(); }
+  if (!chartPrices.length) return;
+  const min = Math.min(...chartPrices) * .9995; const max = Math.max(...chartPrices) * 1.0005; const range = max - min || 1; const candleWidth = (w - left - right) / chartPrices.length;
+  if (chartType === 'line') {
+    context.strokeStyle = '#39d98a'; context.lineWidth = 2; context.beginPath();
+    chartPrices.forEach((value, index) => { const x = left + index * candleWidth + candleWidth / 2; const y = chartHeight - ((value - min) / range) * (chartHeight - 15); if (!index) context.moveTo(x, y); else context.lineTo(x, y); });
+    context.stroke();
+  } else {
+    chartPrices.forEach((value, index) => { const previous = chartPrices[index - 1] || value; const open = previous; const close = value; const high = Math.max(open, close) * 1.00025; const low = Math.min(open, close) * .99975; const x = left + index * candleWidth + candleWidth / 2; const y = (priceValue) => chartHeight - ((priceValue - min) / range) * (chartHeight - 15); const green = close >= open; context.strokeStyle = green ? '#39d98a' : '#ff6574'; context.fillStyle = context.strokeStyle; context.beginPath(); context.moveTo(x, y(high)); context.lineTo(x, y(low)); context.stroke(); const bodyTop = Math.min(y(open), y(close)); const bodyHeight = Math.max(2, Math.abs(y(open) - y(close))); context.fillRect(x - Math.max(1, candleWidth * .28), bodyTop, Math.max(2, candleWidth * .56), bodyHeight); });
+  }
+  const lastY = chartHeight - ((chartPrices.at(-1) - min) / range) * (chartHeight - 15); context.strokeStyle = '#ff9c39'; context.setLineDash([4, 3]); context.beginPath(); context.moveTo(left, lastY); context.lineTo(w - right, lastY); context.stroke(); context.setLineDash([]); context.fillStyle = '#ff9c39'; context.font = '10px sans-serif'; context.fillText(price(chartPrices.at(-1)), w - right + 3, lastY + 3);
+  chartPrices.forEach((value, index) => { const x = left + index * candleWidth; const volumeHeight = 8 + (index % 5) * 3; context.fillStyle = value >= (chartPrices[index - 1] || value) ? 'rgba(57,217,138,.28)' : 'rgba(255,101,116,.28)'; context.fillRect(x, h - volumeHeight, Math.max(1, candleWidth * .5), volumeHeight); });
+}
+
+function refreshChart() { const market = selectedMarket(); if (!market.price) return; const points = chartRange === '1M' ? 40 : chartRange === '1W' ? 30 : 24; const last = Number(market.price); if (!chartPrices.length || chartPrices.length !== points) chartPrices = Array.from({ length: points }, (_, index) => last * (1 + Math.sin(index * 1.7) * .006 - (points - index) * .00025)); chartPrices = [...chartPrices.slice(1), last * (1 + (Math.random() - .48) * .002)]; chartValue.textContent = price(last); drawMobileChart(); }
+function updateTrade() {
+  const market = selectedMarket();
+  const quantity = Number(tradeAmount.value || 0);
+  const total = quantity * Number(market.price || 0);
+  document.getElementById('tradePair').textContent = `${market.symbol} / USD`;
+  tradePrice.textContent = `${price(market.price)} current market price`;
+  tradeLimitPrice.value = Number(market.price || 0).toFixed(2);
+  amountUnit.textContent = market.symbol;
+  tradeTotal.textContent = money(total);
+  tradeProfit.textContent = `+${money(total * 0.02)}`;
+  tradeAvailable.textContent = availableValue.textContent;
+  refreshChart();
+}
 
 async function loadMarkets() { try { markets = await apiRequest('/api/markets'); renderMarkets(markets); updateTrade(); } catch { tradePrice.textContent = 'Market unavailable'; } }
 async function loadAccount() {
@@ -103,7 +150,7 @@ async function loadAccount() {
     const [balance, portfolio] = await Promise.all([apiRequest(`/api/balance/${userEmail()}`), apiRequest(`/api/portfolio/${userEmail()}`)]);
     balanceValue.textContent = money(balance.balance); availableValue.textContent = money(balance.balance); portfolioValue.textContent = money(portfolio.totalValue); portfolioUpdated.textContent = portfolio.updatedAt ? `Updated ${new Date(portfolio.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'No holdings yet';
     const assets = portfolio.assets || [];
-    document.getElementById('holdingList').innerHTML = assets.length ? assets.map((item) => `<a class="holding-row" href="trading-dashboard.htm?symbol=${item.asset}"><span class="coin-dot ${item.asset.toLowerCase()}">${item.asset[0]}</span><div><strong>${item.asset}</strong><small>${item.quantity} units</small></div><div class="row-price"><strong>${money(item.value)}</strong><small>${Number(item.change24h || 0).toFixed(2)}%</small></div></a>`).join('') : '<p class="form-message">No holdings yet. Place your first trade.</p>';
+    document.getElementById('holdingList').innerHTML = assets.length ? assets.map((item) => `<button class="holding-row" data-symbol="${item.asset}" type="button"><span class="coin-dot ${item.asset.toLowerCase()}">${item.asset[0]}</span><div><strong>${item.asset}</strong><small>${item.quantity} units</small></div><div class="row-price"><strong>${money(item.value)}</strong><small>${Number(item.change24h || 0).toFixed(2)}%</small></div></button>`).join('') : '<p class="form-message">No holdings yet. Place your first trade.</p>';
   } catch { tradeMessage.textContent = 'Account data is temporarily unavailable.'; }
 }
 
@@ -112,13 +159,35 @@ document.addEventListener('click', (event) => { const target = event.target.clos
 marketSearch?.addEventListener('input', () => renderMarkets(markets));
 assetSelect?.addEventListener('change', updateTrade);
 tradeAmount?.addEventListener('input', updateTrade);
-document.querySelectorAll('[data-side]').forEach((button) => button.addEventListener('click', () => { tradeSide = button.dataset.side; document.querySelectorAll('[data-side]').forEach((item) => item.classList.toggle('active', item === button)); }));
+document.querySelectorAll('[data-step]').forEach((button) => button.addEventListener('click', () => {
+  if (button.dataset.step === 'price') return;
+  const current = Number(tradeAmount.value || 0);
+  const increment = current < 0.01 ? 0.001 : current < 1 ? 0.01 : 0.1;
+  tradeAmount.value = Math.max(0, current + (button.dataset.direction === 'up' ? increment : -increment)).toFixed(8);
+  updateTrade();
+}));
+document.querySelectorAll('[data-quick-amount]').forEach((button) => button.addEventListener('click', () => {
+  tradeAmount.value = button.dataset.quickAmount;
+  updateTrade();
+}));
+document.querySelectorAll('[data-chart-range]').forEach((button) => button.addEventListener('click', () => { chartRange = button.dataset.chartRange; document.querySelectorAll('[data-chart-range]').forEach((item) => item.classList.toggle('active', item === button)); chartPrices = []; refreshChart(); }));
+document.querySelectorAll('[data-chart-type]').forEach((button) => button.addEventListener('click', () => { chartType = button.dataset.chartType; document.querySelectorAll('[data-chart-type]').forEach((item) => item.classList.toggle('active', item === button)); drawMobileChart(); }));
+let chartDragging = false;
+let chartDragStart = 0;
+let chartScrollStart = 0;
+chartScroll?.addEventListener('pointerdown', (event) => { chartDragging = true; chartDragStart = event.clientX; chartScrollStart = chartScroll.scrollLeft; chartScroll.setPointerCapture(event.pointerId); });
+chartScroll?.addEventListener('pointermove', (event) => { if (chartDragging) chartScroll.scrollLeft = chartScrollStart - (event.clientX - chartDragStart); });
+chartScroll?.addEventListener('pointerup', () => { chartDragging = false; });
+chartScroll?.addEventListener('pointercancel', () => { chartDragging = false; });
+window.addEventListener('resize', drawMobileChart);
+document.querySelectorAll('[data-side]').forEach((button) => button.addEventListener('click', () => { tradeSide = button.dataset.side; document.querySelectorAll('[data-side]').forEach((item) => item.classList.toggle('active', item === button)); updateTrade(); }));
 logoutButton?.addEventListener('click', () => { localStorage.removeItem(currentUserKey); window.location.reload(); });
 document.getElementById('guestLogin')?.addEventListener('click', () => { authForm.hidden = false; document.getElementById('guestLogin').hidden = true; authEmail.focus(); });
 document.querySelectorAll('[data-auth-mode]').forEach((button) => button.addEventListener('click', () => setAuthMode(button.dataset.authMode)));
 authForm?.addEventListener('submit', authenticate);
 document.getElementById('refreshButton')?.addEventListener('click', () => Promise.all([loadMarkets(), loadAccount()]));
-document.getElementById('tradeForm')?.addEventListener('submit', async (event) => { event.preventDefault(); const user = currentUser(); if (!user) { tradeMessage.textContent = 'Open an account before trading.'; return; } const market = selectedMarket(); const amount = Number(tradeAmount.value); if (!amount || amount <= 0) { tradeMessage.textContent = 'Enter a valid amount.'; return; } try { await apiRequest('/api/orders', { method: 'POST', body: JSON.stringify({ userEmail: user.email, asset: market.symbol, side: tradeSide, orderType: 'Market', amount: amount / market.price, price: market.price, total: amount }) }); tradeMessage.textContent = `${tradeSide === 'buy' ? 'Buy' : 'Sell'} order placed.`; tradeAmount.value = ''; updateTrade(); loadAccount(); } catch { tradeMessage.textContent = 'Order could not be placed. Check your balance.'; } });
+document.getElementById('tradeForm')?.addEventListener('submit', async (event) => { event.preventDefault(); const user = currentUser(); if (!user) { tradeMessage.textContent = 'Open an account before trading.'; return; } const market = selectedMarket(); const amount = Number(tradeAmount.value); if (!amount || amount <= 0 || !market.price) { tradeMessage.textContent = 'Enter a valid amount.'; return; } const quantity = amount / market.price; const total = amount; tradeMessage.textContent = 'Submitting order...'; try { await apiRequest('/api/orders', { method: 'POST', body: JSON.stringify({ userEmail: user.email, asset: market.symbol, side: tradeSide, orderType: 'Market', amount: quantity, price: market.price, total }) }); tradeMessage.textContent = `${tradeSide === 'buy' ? 'Buy' : 'Sell'} order placed for ${quantity.toFixed(8)} ${market.symbol}.`; tradeAmount.value = ''; updateTrade(); loadAccount(); } catch (error) { tradeMessage.textContent = error.message.includes('400') ? 'Order rejected. Check your balance or holdings.' : 'Order could not be placed. Try again.'; } });
 
 loadAccount();
 loadMarkets();
+window.setInterval(refreshChart, 2500);

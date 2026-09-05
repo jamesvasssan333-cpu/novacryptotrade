@@ -36,6 +36,20 @@ server.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+const pageRoutes = {
+  '/admin': 'admin.html',
+  '/market': 'market.html',
+  '/order': 'order.html',
+  '/trade': 'trad.html',
+  '/trading-dashboard': 'trading-dashboard.htm'
+};
+
+Object.entries(pageRoutes).forEach(([route, file]) => {
+  server.get(route, (req, res) => {
+    res.sendFile(path.join(__dirname, file));
+  });
+});
+
 const marketPrices = {
   BTC: 67420.18,
   ETH: 3480.12,

@@ -62,13 +62,22 @@ function addReceipt(container, payment) {
   const label = document.createElement('span');
   label.textContent = 'Receipt';
   if (payment.receiptData) {
+    if (payment.receiptType?.startsWith('image/')) {
+      const preview = document.createElement('img');
+      preview.className = 'receipt-preview';
+      preview.src = payment.receiptData;
+      preview.alt = payment.receiptName || 'Payment receipt';
+      preview.loading = 'lazy';
+      detail.append(label, preview);
+    }
+
     const link = document.createElement('a');
     link.href = payment.receiptData;
     link.download = payment.receiptName || 'payment-receipt';
     link.target = '_blank';
     link.rel = 'noopener';
-    link.textContent = payment.receiptName || 'View receipt';
-    detail.append(label, link);
+    link.textContent = payment.receiptType?.startsWith('image/') ? 'View full image' : (payment.receiptName || 'View receipt');
+    detail.append(link);
   } else {
     const missing = document.createElement('strong');
     missing.textContent = 'Not provided';

@@ -10,6 +10,8 @@ const availableValue = document.getElementById('availableValue');
 const portfolioValue = document.getElementById('portfolioValue');
 const portfolioUpdated = document.getElementById('portfolioUpdated');
 const ordersList = document.getElementById('ordersList');
+const orderDetailsDialog = document.getElementById('orderDetailsDialog');
+const closeOrderDetails = document.getElementById('closeOrderDetails');
 const homeMarkets = document.getElementById('homeMarkets');
 const marketList = document.getElementById('marketList');
 const marketSearch = document.getElementById('marketSearch');
@@ -25,6 +27,7 @@ const mobileChart = document.getElementById('mobileChart');
 const chartValue = document.getElementById('chartValue');
 const chartScroll = document.getElementById('chartScroll');
 const tradeMessage = document.getElementById('tradeMessage');
+const tradeForm = document.getElementById('tradeForm');
 const authForm = document.getElementById('authForm');
 const authName = document.getElementById('authName');
 const authEmail = document.getElementById('authEmail');
@@ -73,13 +76,43 @@ function renderOrders(orders = []) {
     return;
   }
   orders.forEach((order) => {
-    const item = document.createElement('article');
+    const item = document.createElement('button');
     item.className = 'order-item';
+    item.type = 'button';
     const side = order.side === 'buy' ? 'Buy' : 'Sell';
     const status = order.status || 'open';
-    item.innerHTML = `<div><strong>${order.asset} / USD</strong><small>${side} · ${order.orderType || 'Market'}</small></div><div><strong>${Number(order.amount || 0).toFixed(8)} ${order.asset}</strong><small>${price(order.price)} · ${money(order.total)}</small></div><span class="order-status ${status}">${status}</span>`;
+    const pair = document.createElement('div');
+    const pairTitle = document.createElement('strong');
+    pairTitle.textContent = `${order.asset} / USD`;
+    const pairMeta = document.createElement('small');
+    pairMeta.textContent = `${side} · ${order.orderType || 'Market'}`;
+    pair.append(pairTitle, pairMeta);
+    const amount = document.createElement('div');
+    const amountTitle = document.createElement('strong');
+    amountTitle.textContent = `${Number(order.amount || 0).toFixed(8)} ${order.asset}`;
+    const amountMeta = document.createElement('small');
+    amountMeta.textContent = `${price(order.price)} · ${money(order.total)}`;
+    amount.append(amountTitle, amountMeta);
+    const statusLabel = document.createElement('span');
+    statusLabel.className = `order-status ${status}`;
+    statusLabel.textContent = status;
+    item.append(pair, amount, statusLabel);
+    item.addEventListener('click', () => showOrderDetails(order));
     ordersList.append(item);
   });
+}
+
+function showOrderDetails(order) {
+  if (!orderDetailsDialog) return;
+  document.getElementById('orderDetailsTitle').textContent = `${order.asset} / USD`;
+  document.getElementById('orderDetailsSide').textContent = order.side === 'buy' ? 'Buy' : 'Sell';
+  document.getElementById('orderDetailsStatus').textContent = order.status || 'open';
+  document.getElementById('orderDetailsAmount').textContent = `${Number(order.amount || 0).toFixed(8)} ${order.asset}`;
+  document.getElementById('orderDetailsPrice').textContent = price(order.price);
+  document.getElementById('orderDetailsTotal').textContent = money(order.total);
+  document.getElementById('orderDetailsType').textContent = order.orderType || 'Market';
+  document.getElementById('orderDetailsDate').textContent = order.createdAt ? new Date(order.createdAt).toLocaleString() : 'Unknown';
+  orderDetailsDialog.showModal();
 }
 
 function setAuthMessage(message, type = '') { authMessage.textContent = message; authMessage.className = `form-message ${type}`; }
@@ -219,7 +252,9 @@ chartScroll?.addEventListener('pointermove', (event) => { if (chartDragging) cha
 chartScroll?.addEventListener('pointerup', () => { chartDragging = false; });
 chartScroll?.addEventListener('pointercancel', () => { chartDragging = false; });
 window.addEventListener('resize', drawMobileChart);
-document.querySelectorAll('[data-side]').forEach((button) => button.addEventListener('click', () => { tradeSide = button.dataset.side; document.querySelectorAll('[data-side]').forEach((item) => item.classList.toggle('active', item === button)); updateTrade(); }));
+document.querySelectorAll('[data-side]').forEach((button) => button.addEventListener('click', () => { tradeSide = button.dataset.side; document.querySelectorAll('[data-side]').forEach((item) => item.classList.toggle('active', item === button)); updateTrade(); tradeForm?.requestSubmit(); }));
+closeOrderDetails?.addEventListener('click', () => orderDetailsDialog?.close());
+orderDetailsDialog?.addEventListener('click', (event) => { if (event.target === orderDetailsDialog) orderDetailsDialog.close(); });
 document.querySelectorAll('[data-funds-mode]').forEach((button) => button.addEventListener('click', () => { fundsMode = button.dataset.fundsMode; document.querySelectorAll('[data-funds-mode]').forEach((item) => item.classList.toggle('active', item === button)); withdrawFields.hidden = fundsMode !== 'withdraw'; depositWallet.hidden = fundsMode !== 'deposit'; fundsSubmit.textContent = fundsMode === 'withdraw' ? 'Request withdrawal' : 'I have sent my deposit'; fundsMessage.textContent = ''; }));
 document.getElementById('depositWalletCopy')?.addEventListener('click', async () => { await navigator.clipboard.writeText('bc1qatftjrjuatufzakjjle666gg69ufztft4u0rxw'); fundsMessage.textContent = 'Deposit wallet address copied.'; });
 logoutButton?.addEventListener('click', () => { localStorage.removeItem(currentUserKey); window.location.reload(); });

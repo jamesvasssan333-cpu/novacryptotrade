@@ -164,9 +164,9 @@ async function supabaseRequest(table, method, body, query = '') {
   }
 }
 
-async function supabaseRead(table) {
+async function supabaseRead(table, query = '?select=*') {
   if (!SUPABASE_SERVICE_ROLE_KEY) throw new Error('Supabase sync is not configured.');
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}${query}`, {
     headers: {
       apikey: SUPABASE_SERVICE_ROLE_KEY,
       Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
@@ -281,7 +281,7 @@ server.get('/api/markets', (req, res) => {
   })));
 });
     
-server.get('/api/portfolio/:email', (req, res) => {
+server.get('/api/portfolio/:email', async (req, res) => {
   const email = normalizeEmail(req.params.email);
   if (!email) return sendJson(res, 400, { error: 'A valid email is required.' });
 
@@ -301,8 +301,30 @@ server.get('/api/portfolio/:email', (req, res) => {
   const cashBalance = getBalance(email);
   const holdingsValue = assets.reduce((total, item) => total + item.value, 0);
   const totalValue = cashBalance + holdingsValue;
-  const userOrders = (router.db.get('orders').value() || [])
+  let userOrders = (router.db.get('orders').value() || [])
     .filter((order) => normalizeEmail(order.userEmail) === email);
+  if (SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const remoteOrders = await supabaseRead('orders', `?user_email=eq.${encodeURIComponent(email)}&select=*`);
+      const normalizedRemoteOrders = remoteOrders.map((order) => ({
+        id: order.id,
+        userEmail: order.user_email,
+        asset: order.asset,
+        side: order.side,
+        orderType: order.order_type,
+        amount: Number(order.amount),
+        price: Number(order.price),
+        total: Number(order.total),
+        status: order.status,
+        createdAt: order.created_at
+      }));
+      const ordersById = new Map(userOrders.map((order) => [String(order.id), order]));
+      normalizedRemoteOrders.forEach((order) => ordersById.set(String(order.id), order));
+      userOrders = [...ordersById.values()].sort((left, right) => new Date(left.createdAt) - new Date(right.createdAt));
+    } catch (error) {
+      console.warn(`Supabase orders read failed: ${error.message}`);
+    }
+  }
   const positions = assets.map((asset) => {
     const assetOrders = userOrders.filter((order) => order.asset === asset.asset);
     const bought = assetOrders.filter((order) => order.side === 'buy');

@@ -748,8 +748,10 @@ server.put('/payments', async (req, res) => {
       : Promise.resolve(false);
     return [paymentSync.then((success) => ({ type: 'payment', success })), approvalEmail.then((success) => ({ type: 'email', success }))];
   }));
-  if (userSyncResults.some((result) => !result) || paymentSyncResults.some((result) => result.type === 'payment' && !result.success)) {
-    return sendJson(res, 502, { error: 'Payment saved locally, but Supabase synchronization failed.' });
+  const syncFailed = userSyncResults.some((result) => !result) || paymentSyncResults.some((result) => result.type === 'payment' && !result.success);
+  if (syncFailed) {
+    console.warn('Payment saved locally, but Supabase synchronization failed.');
+    return sendJson(res, 200, { ...payments, syncWarning: 'Payment saved locally; cloud synchronization is pending.' });
   }
   return sendJson(res, 200, payments);
 });

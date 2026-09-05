@@ -240,26 +240,31 @@ function setupPortfolioPage() {
     if (invested) invested.textContent = formatMarketPrice(portfolio.holdingsValue);
     if (updated) updated.textContent = portfolio.updatedAt ? new Date(portfolio.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--';
 
-    holdingsList.replaceChildren();
-    if (!portfolio.assets.length) {
-      holdingsList.innerHTML = '<p class="portfolio-empty">No assets held yet. Buy an asset from the trading dashboard to see it here.</p>';
-    } else {
+    if (holdingsList) {
+      holdingsList.replaceChildren();
+      if (!portfolio.assets.length) {
+        holdingsList.innerHTML = '<p class="portfolio-empty">No assets held yet. Buy an asset from the trading dashboard to see it here.</p>';
+      } else {
+        portfolio.assets.forEach((item) => {
+          const row = document.createElement('a');
+          row.className = 'holding-row';
+          row.href = `trading-dashboard.htm?symbol=${encodeURIComponent(item.asset)}`;
+          row.innerHTML = `<div class="asset"><span class="coin-dot ${coinClasses[item.asset] || 'btc'}"></span> ${coinNames[item.asset] || item.asset}</div><div><strong>${item.quantity} ${item.asset}</strong><small>${formatMarketPrice(item.value)} <span class="trend ${item.change24h >= 0 ? 'up' : 'down'}">${item.change24h >= 0 ? '+' : ''}${item.change24h.toFixed(2)}%</span></small></div>`;
+          holdingsList.append(row);
+        });
+      }
+    }
+
+    if (meters) {
+      meters.replaceChildren();
       portfolio.assets.forEach((item) => {
-        const row = document.createElement('a');
-        row.className = 'holding-row';
-        row.href = `trading-dashboard.htm?symbol=${encodeURIComponent(item.asset)}`;
-        row.innerHTML = `<div class="asset"><span class="coin-dot ${coinClasses[item.asset] || 'btc'}"></span> ${coinNames[item.asset] || item.asset}</div><div><strong>${item.quantity} ${item.asset}</strong><small>${formatMarketPrice(item.value)} <span class="trend ${item.change24h >= 0 ? 'up' : 'down'}">${item.change24h >= 0 ? '+' : ''}${item.change24h.toFixed(2)}%</span></small></div>`;
-        holdingsList.append(row);
+        const meter = document.createElement('div');
+        meter.innerHTML = `<label>${coinNames[item.asset] || item.asset}<strong>${item.allocation.toFixed(2)}%</strong></label><div class="meter"><span style="width: ${Math.min(item.allocation, 100)}%"></span></div>`;
+        meters.append(meter);
       });
     }
 
-    meters.replaceChildren();
-    portfolio.assets.forEach((item) => {
-      const meter = document.createElement('div');
-      meter.innerHTML = `<label>${coinNames[item.asset] || item.asset}<strong>${item.allocation.toFixed(2)}%</strong></label><div class="meter"><span style="width: ${Math.min(item.allocation, 100)}%"></span></div>`;
-      meters.append(meter);
-    });
-
+    if (!orders) return;
     orders.replaceChildren();
     if (!portfolio.orders.length) {
       orders.innerHTML = '<p class="portfolio-empty">No trading activity yet.</p>';
